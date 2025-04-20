@@ -1,7 +1,9 @@
 from confluent_kafka import Producer
 import json
 import logging
+import uuid
 
+from .models import StudentRequest
 
 class ProducerService:
     def __init__(self, bootstrap_servers: str, topic: str):
@@ -18,7 +20,7 @@ class ProducerService:
         else:
             self.logger.info(f"✅ Record produced to {msg.topic()} [{msg.partition()}] @ offset {msg.offset()}")
 
-    def produce(self, key: str, value: dict):
+    def send(self, key: str, value: dict):
         try:
             self.logger.info(f"Producing to topic {self.topic}: {value}")
             self.producer.produce(

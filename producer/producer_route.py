@@ -1,20 +1,21 @@
+import uuid
 from fastapi import APIRouter
-import producer.producer_service as producer_service
+from .producer_service import ProducerService
+from .models import StudentRequest
 
-
-class ProducerRoute:
+class ProducerController:
     """
     Class-based API to handle health checks.
     """
 
-    def __init__(self, producer: producer_service, log):
+    def __init__(self, producer: ProducerService):
         self.producer = producer
-        self.log = log
         self.router = APIRouter(prefix="/api/v1", tags=["Health Check"])
         self.router.add_api_route("/student", self.produce_student, methods=["POST"])
 
-    def produce_student(self, student: dict):
+    def produce_student(self, student: StudentRequest):
         """
         Endpoint to check MySQL database health.
         """
-        self.producer.produce(student.get("id"), student)
+        student.id = str(uuid.uuid4())
+        self.producer.send(student.id, student.model_dump())

@@ -6,5 +6,5 @@ if __name__ == "__main__":
 
     student_data = generate_fake_student()
 
-    kafka_producer.produce(key=str(student_data["id"]), value=student_data)
+    kafka_producer.send(key=str(student_data["id"]), value=student_data)
     kafka_producer.flush()

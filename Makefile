@@ -27,3 +27,6 @@ dcdown:
   
 produce:
 	poetry run python producer/main.py
+
+server:
+	poetry run uvicorn producer.server:app --reload

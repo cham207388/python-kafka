@@ -16,7 +16,7 @@ class Student(SQLModel, table=True):
             raise ValueError("Name cannot be empty")
         return value
       
-class CreateUserRequest(SQLModel):
+class StudentRequest(SQLModel):
     email: EmailStr  # ✅ Enforces email validation
     first_name: str = Field(..., min_length=3, max_length=15)
     last_name: str = Field(..., min_length=3, max_length=15)

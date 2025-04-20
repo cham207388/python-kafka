@@ -5,7 +5,7 @@ from sqlmodel import Field, SQLModel
 class Student(SQLModel, table=True):
     __tablename__ = "students"
     
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[str] = Field(default=None, primary_key=True)
     email: EmailStr = Field(unique=True, nullable=False)
     first_name: str = Field(max_length=50, nullable=False)
     last_name: str = Field(max_length=50, nullable=False)
@@ -16,7 +16,8 @@ class Student(SQLModel, table=True):
             raise ValueError("Name cannot be empty")
         return value
       
-class CreateUserRequest(SQLModel):
+class StudentRequest(SQLModel):
+    id: Optional[str] = None
     email: EmailStr  # ✅ Enforces email validation
     first_name: str = Field(..., min_length=3, max_length=15)
     last_name: str = Field(..., min_length=3, max_length=15)
