@@ -1,4 +1,4 @@
-.PHONY: help dcu dcd
+.PHONY: help dcu dcd dcall dcdown produce
 
 
 
@@ -18,3 +18,12 @@ dcu: ## Start Kafka cluster
 
 dcd: ## Stop Kafka cluster
 	docker compose -f ./compose.yaml down -v
+	
+dcall:
+	docker compose -f dc-all-in-one.yaml up -d
+	
+dcdown:
+	docker compose -f dc-all-in-one.yaml down -v
+  
+produce:
+	poetry run python producer/main.py
