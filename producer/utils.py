@@ -3,6 +3,8 @@ import uuid
 from dotenv import load_dotenv
 from faker import Faker
 from sqlmodel import create_engine
+import logging
+import sys
 
 load_dotenv()
 
@@ -30,3 +32,6 @@ def generate_fake_student():
         "last_name": fake.last_name(),
         "email": fake.email()
     }
+
+FORMAT = '%(levelname)s: %(asctime)s %(name)s - line: %(lineno)d \n\t%(message)s'
+logging.basicConfig(stream=sys.stdout, format=FORMAT, level=logging.DEBUG)

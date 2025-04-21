@@ -9,7 +9,6 @@ class ProducerService:
         self.producer = Producer({
             'bootstrap.servers': bootstrap_servers
         })
-        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
     def delivery_report(self, err, msg):
