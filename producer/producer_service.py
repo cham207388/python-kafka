@@ -1,8 +1,7 @@
 import json
 import logging
+import uuid
 from confluent_kafka import Producer
-from confluent_kafka.admin import AdminClient, NewTopic
-
 
 class ProducerService:
     def __init__(self, bootstrap_servers: str, topic: str):
@@ -34,5 +33,24 @@ class ProducerService:
             self.logger.exception("Unexpected error while producing message")
 
     def flush(self):
+        """
+        Flushes any remaining messages in the producer buffer.
+
+        This method logs an informational message indicating that the flushing process
+        is starting and then calls the flush method on the producer to ensure all
+        buffered messages are sent.
+
+        The logger is used to provide a visual indication of the flushing process,
+        and the producer's flush method is responsible for the actual transmission
+        of messages.
+
+        Returns:
+            None
+        """
         self.logger.info("🔄 Flushing remaining messages...")
         self.producer.flush()
+        
+    def get_part_key(self, uuid_str: str):
+        int_key = uuid.UUID(uuid_str).int
+        partition_key = str(int_key % 2)
+        return f'part_{partition_key}'.encode('utf-8')

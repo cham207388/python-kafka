@@ -49,5 +49,5 @@ dcd3: ## stop kafka cluster 3 brokers
 sleep:
 	sleep 5
 
-setup: dc3 sleep migrate ## compose up and migrate
-	
+path:
+	poetry env info --path

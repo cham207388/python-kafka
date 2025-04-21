@@ -2,8 +2,8 @@ import logging
 import uuid
 from fastapi import APIRouter
 from producer.producer_service import ProducerService
-from producer.models import StudentRequest
 from producer.student_service import StudentService
+from producer.utils import generate_fake_student
 
 class ProducerController:
     def __init__(self, 
@@ -16,13 +16,12 @@ class ProducerController:
         self.router.get("/students")(self.get_all_students)
         self.logger = logging.getLogger(__name__)
 
-    def produce_student(self, student: StudentRequest):
-        """
-        Endpoint to check MySQL database health.
-        """
-        student.id = str(uuid.uuid4())
-        self.producer_service.send(student.id, student.model_dump())
+    def produce_student(self):
+        student = generate_fake_student()
+        key = self.producer_service.get_part_key(student["id"])
+        self.producer_service.send(key, student)
         
     def get_all_students(self):
         self.logger.info('Getting all students')
         return self.student_service.get_all()
+    

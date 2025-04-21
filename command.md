@@ -58,3 +58,15 @@ cd /bin
 |------------------------------|---------|
 | **Get broker config**        | `kafka-configs --bootstrap-server broker:9092 --entity-type brokers --entity-name 1 --describe` |
 | **Change topic retention**   | `kafka-configs --bootstrap-server broker:9092 --entity-type topics --entity-name my-topic --alter --add-config retention.ms=60000` |
+
+```bash
+docker exec -it cli-tools kafka-topics --bootstrap-server broker1:29092 --list
+```
+
+or
+
+```bash
+docker exec -it cli-tools sh
+```
+
+and then run kafka commands

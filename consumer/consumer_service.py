@@ -40,7 +40,6 @@ class ConsumerService:
         try:
             key = key.decode() if key else None
             student = to_student(value)
-            self.logger.info(f'converted student: {student}')
             
             self.logger.info(f"📝 Received student record [key={key}]: {student}")
             self.persist(student)
