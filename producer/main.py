@@ -1,5 +1,5 @@
 from producer_service import ProducerService
-from env_vars import generate_fake_student
+from producer.utils import generate_fake_student
 
 if __name__ == "__main__":
     kafka_producer = ProducerService(bootstrap_servers="localhost:9092", topic="student")

@@ -1,3 +1,4 @@
+import json
 from pydantic import EmailStr, field_validator, ConfigDict
 from typing import Optional
 from sqlmodel import Field, SQLModel
@@ -15,31 +16,8 @@ class Student(SQLModel, table=True):
         if not value.strip():
             raise ValueError("Name cannot be empty")
         return value
-      
-class StudentRequest(SQLModel):
-    email: EmailStr  # ✅ Enforces email validation
-    first_name: str = Field(..., min_length=3, max_length=15)
-    last_name: str = Field(..., min_length=3, max_length=15)
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "email": "username@email.com",
-                "first_name": "First Name",
-                "last_name": "Last Name"
-            }
-        }
-    )
-
-    @field_validator("first_name", "last_name")
-    def validate_name(cls, value):
-        if not value.strip():
-            raise ValueError("Name cannot be empty")
-        return value
-      
-def to_user(request: dict) -> Student:
-    return Student(
-        email=request.get("email"),
-        first_name=request.get("first_name"),
-        last_name=request.get("last_name")
-    )
+     
+def to_student(value) -> Student:
+    student_dict = json.loads(value.decode())
+    student_obj = Student.model_validate(student_dict)
+    return student_obj

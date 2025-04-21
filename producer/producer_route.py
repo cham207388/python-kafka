@@ -1,7 +1,7 @@
 import uuid
 from fastapi import APIRouter
-from .producer_service import ProducerService
-from .models import StudentRequest
+from producer.producer_service import ProducerService
+from producer.models import StudentRequest
 
 class ProducerController:
     """

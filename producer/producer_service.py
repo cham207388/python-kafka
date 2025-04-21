@@ -1,9 +1,7 @@
 from confluent_kafka import Producer
 import json
 import logging
-import uuid
 
-from .models import StudentRequest
 
 class ProducerService:
     def __init__(self, bootstrap_servers: str, topic: str):

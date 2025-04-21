@@ -2,6 +2,7 @@ from pydantic import EmailStr, field_validator, ConfigDict
 from typing import Optional
 from sqlmodel import Field, SQLModel
 
+
 class Student(SQLModel, table=True):
     __tablename__ = "students"
     
