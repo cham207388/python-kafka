@@ -35,16 +35,6 @@ services:
       # See https://docs.confluent.io/kafka/operations-tools/kafka-tools.html#kafka-storage-sh
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
 
-  topic-creator:
-    image: confluentinc/cp-server:7.9.0
-    container_name: topic-creator
-    depends_on:
-    - broker
-    entrypoint: /bin/sh
-    command: -c "echo 'Waiting for Kafka to be ready...'; cub kafka-ready -b broker:29092 1 60; echo 'Creating topic...'; kafka-topics --bootstrap-server broker:29092 --create --topic student --partitions 1 --replication-factor 1; echo 'Topic created successfully'; exit 0"
-    environment:
-      KAFKA_BOOTSTRAP_SERVERS: broker:29092
-
   schema-registry:
     image: confluentinc/cp-schema-registry:7.9.0
     hostname: schema-registry

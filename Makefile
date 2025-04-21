@@ -1,4 +1,4 @@
-.PHONY: help dcu dcd dcall dcdown produce server consumer migrate revision
+.PHONY: help dcu dcd dcall dcdown dc3 dcd3 produce server consumer migrate revision
 
 message=""
 
@@ -20,10 +20,10 @@ dcd: ## Stop Kafka cluster
 	docker compose -f ./compose.yaml down -v
 	
 dcall: ## start kafka cluster
-	docker compose -f dc-all-in-one.yaml up -d
+	docker compose -f confluent-compose.yaml up -d
 	
 dcdown: ## stop kafka cluster
-	docker compose -f dc-all-in-one.yaml down -v
+	docker compose -f confluent-compose.yaml down -v
   
 produce: ## producer script
 	poetry run python producer/main.py
@@ -37,5 +37,11 @@ consumer: ## start consumer group
 migrate: ## alembic migration
 	poetry run alembic upgrade head
 	
-revision: ## create revision make revision message='custom message'
+revision: ## make revision message='custom message'
 	poetry run alembic revision -m $(message)
+	
+dc3: ## start kafka cluster 3 brokers
+	docker compose -f confluent-compose-3b.yaml up -d
+	
+dcd3: ## stop kafka cluster 3 brokers
+	docker compose -f confluent-compose-3b.yaml down -v

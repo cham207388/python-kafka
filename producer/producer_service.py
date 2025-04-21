@@ -1,6 +1,7 @@
-from confluent_kafka import Producer
 import json
 import logging
+from confluent_kafka import Producer
+from confluent_kafka.admin import AdminClient, NewTopic
 
 
 class ProducerService:
