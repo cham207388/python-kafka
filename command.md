@@ -16,7 +16,7 @@ cd /bin
 
 | Task                          | Command |
 |------------------------------|---------|
-| **List all topics**          | `kafka-topics --bootstrap-server broker:9092 --list` |
+| **List all topics**          | `kafka-topics --bootstrap-server broker1:9092 --list` |
 | **Create a topic**           | `kafka-topics --bootstrap-server broker:9092 --create --topic student --partitions 1 --replication-factor 1` |
 | **Delete a topic**           | `kafka-topics --bootstrap-server broker:9092 --delete --topic my-topic` |
 | **Describe a topic**         | `kafka-topics --bootstrap-server broker:9092 --describe --topic my-topic` |

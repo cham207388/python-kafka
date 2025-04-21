@@ -20,7 +20,6 @@ bootstrap_server=os.getenv("KAFKA_BOOTSTRAP_SERVER")
 DATABASE_URL = (
     f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 )
-print(f'DATABASE_URL: {DATABASE_URL}')
 engine = create_engine(DATABASE_URL, echo=False)
 
 fake = Faker()

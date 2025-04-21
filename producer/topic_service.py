@@ -13,6 +13,7 @@ class TopicService:
         if topic in topic_metadata.topics:
             self.logger.info(f"✅ Topic '{topic}' already exists.")
             return
+        self.logger.info(f"✅ Creating topic '{topic}'")
 
         # Topic config for compaction
         config = {

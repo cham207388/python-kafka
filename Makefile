@@ -45,3 +45,9 @@ dc3: ## start kafka cluster 3 brokers
 	
 dcd3: ## stop kafka cluster 3 brokers
 	docker compose -f confluent-compose-3b.yaml down -v
+
+sleep:
+	sleep 5
+
+setup: dc3 sleep migrate ## compose up and migrate
+	
