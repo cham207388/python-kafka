@@ -1,6 +1,8 @@
 import os
 from sqlmodel import create_engine
 from dotenv import load_dotenv
+import logging
+import sys
 
 load_dotenv()
 
@@ -19,3 +21,6 @@ DATABASE_URL = (
 )
 
 engine = create_engine(DATABASE_URL, echo=False)
+
+FORMAT = '%(levelname)s: %(asctime)s %(name)s - line: %(lineno)d \n\t%(message)s'
+logging.basicConfig(stream=sys.stdout, format=FORMAT, level=logging.DEBUG)

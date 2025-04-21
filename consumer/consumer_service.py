@@ -2,8 +2,8 @@ import json
 import logging
 from confluent_kafka import Consumer, KafkaException
 from sqlmodel import Session
-from consumer.utils import engine
-from consumer.models import to_student
+from utils import engine
+from models import to_student
 
 
 class ConsumerService:
@@ -16,7 +16,6 @@ class ConsumerService:
         })
 
         self.logger = logging.getLogger(__name__)
-        logging.basicConfig(level=logging.INFO)
 
         self.consumer.subscribe([self.topic])
         self.logger.info(f"📡 Subscribed to topic: {self.topic}")
@@ -37,14 +36,14 @@ class ConsumerService:
             self.consumer.close()
 
     def handle_message(self, key, value):
-        print(f'converted student: {value}')
+        self.logger.info(f'binary value: {value}')
         try:
             key = key.decode() if key else None
             student = to_student(value)
-            print(f'converted student: {student}')
+            self.logger.info(f'converted student: {student}')
             
             self.logger.info(f"📝 Received student record [key={key}]: {student}")
-            # You can call database save logic here
+            self.persist(student)
 
         except Exception as e:
             self.logger.error(f"❌ Failed to process message: {e}")
@@ -53,4 +52,5 @@ class ConsumerService:
       with Session(engine) as session:
         session.add(student)
         session.commit()
+        self.logger.info('student saved!')
         

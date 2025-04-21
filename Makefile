@@ -1,4 +1,4 @@
-.PHONY: help dcu dcd dcall dcdown produce
+.PHONY: help dcu dcd dcall dcdown produce server consumer migrate revision
 
 message=""
 
@@ -30,6 +30,9 @@ produce: ## producer script
 
 server: ## producer fast api
 	poetry run uvicorn producer.server:app --reload
+	
+consumer: ## start consumer group
+	poetry run python consumer/main.py
 	
 migrate: ## alembic migration
 	poetry run alembic upgrade head
