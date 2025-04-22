@@ -67,11 +67,12 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 
 - Python 3.12+
 - Docker & Docker Compose
-- `confluent-kafka`
+- `confluent-kafka` kafka
 - `pydantic`, `sqlmodel` (optional, for model validation)
-- `psycopg2-binary`
-- `python-dotenv`
-- `alembic`
+- `psycopg2-binary` PostgreSQL
+- `python-dotenv` environment variable
+- `alembic` db migration
+- `mmh3` hasing
 
 ---
 
@@ -168,7 +169,7 @@ Built with ❤️ using:
 - [Confluent Platform Docker images](https://hub.docker.com/u/confluentinc)
 - [docker kafka](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html)
 - [confluent-kafka pypi](https://pypi.org/project/confluent-kafka/#description)
-
+- [confluent-kafka-docs](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html)
 
 ## Gotchas
 

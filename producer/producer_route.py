@@ -18,8 +18,9 @@ class ProducerController:
 
     def produce_student(self):
         student = generate_fake_student()
-        key = self.producer_service.get_part_key(student["id"])
-        self.producer_service.send(key, student)
+        key = student["id"]
+        partition = self.producer_service.get_partition(student["id"], num_partitions=2)
+        self.producer_service.send(key=key, value=student, partition=partition)
         
     def get_all_students(self):
         self.logger.info('Getting all students')

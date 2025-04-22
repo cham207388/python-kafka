@@ -1,7 +1,7 @@
 import json
 import logging
-import uuid
-from confluent_kafka import Producer
+import mmh3
+from confluent_kafka import Producer, Message
 
 class ProducerService:
     def __init__(self, bootstrap_servers: str, topic: str):
@@ -11,20 +11,21 @@ class ProducerService:
         })
         self.logger = logging.getLogger(__name__)
 
-    def delivery_report(self, err, msg):
+    def delivery_report(self, err, message: Message):
         if err is not None:
-            self.logger.error(f"❌ Delivery failed for record {msg.key()}: {err}")
+            self.logger.error(f"❌ Delivery failed for record {message.key()}: {err}")
         else:
-            self.logger.info(f"✅ Record produced to {msg.topic()} [{msg.partition()}] @ offset {msg.offset()}")
+            self.logger.info(f"✅ Record produced to topic: {message.topic()}, partition: [{message.partition()}] @ offset: {message.offset()}")
 
-    def send(self, key: str, value: dict):
+    def send(self, key: str, value: dict, partition: int):
         try:
-            self.logger.info(f"Producing to topic {self.topic}: {value}")
+            self.logger.info(f"Producing record:{value} to topic: {self.topic}")
             self.producer.produce(
                 topic=self.topic,
                 key=key,
                 value=json.dumps(value),
-                callback=self.delivery_report
+                callback=self.delivery_report,
+                partition=partition
             )
             self.producer.poll(0)
         except BufferError as e:
@@ -50,7 +51,7 @@ class ProducerService:
         self.logger.info("🔄 Flushing remaining messages...")
         self.producer.flush()
         
-    def get_part_key(self, uuid_str: str):
-        int_key = uuid.UUID(uuid_str).int
-        partition_key = str(int_key % 2)
-        return f'part_{partition_key}'.encode('utf-8')
+    def get_partition(self, id: str, num_partitions: int):
+        key_bytes = id.encode("utf-8")
+        hash_value = mmh3.hash(key_bytes, signed=False)
+        return hash_value % num_partitions
