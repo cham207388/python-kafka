@@ -12,8 +12,8 @@ class ProducerController:
         self.producer_service = producer_service
         self.student_service = student_service
         self.router = APIRouter(prefix="/api/v1", tags=["Health Check"])
-        self.router.post("/students")(self.produce_student)
-        self.router.get("/students")(self.get_all_students)
+        self.router.post("/students", status_code=201)(self.produce_student)
+        self.router.get("/students", status_code=200)(self.get_all_students)
         self.logger = logging.getLogger(__name__)
 
     def produce_student(self):
