@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter
 from producer.producer_service import ProducerService
 from producer.student_service import StudentService
-from producer.utils import generate_fake_student
+from producer.utils import generate_fake_student, num_of_partitions
 
 class ProducerController:
     def __init__(self, 
@@ -19,7 +19,7 @@ class ProducerController:
     def produce_student(self):
         student = generate_fake_student()
         key = student["id"]
-        partition = self.producer_service.get_partition(student["id"], num_partitions=2)
+        partition = self.producer_service.get_partition(student["id"], num_partitions=num_of_partitions)
         self.producer_service.send(key=key, value=student, partition=partition)
         
     def get_all_students(self):

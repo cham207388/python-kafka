@@ -32,6 +32,7 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 ## 📦 Features
 
 ### 🚀 ProducerService
+
 - Uses `confluent_kafka.Producer`
 - Automatically creates topic if it does not exist (with `cleanup.policy=compact`)
 - Accepts a UUID key, converts to int, and routes to 1 of 2 partitions based on modulo
@@ -39,6 +40,7 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 - Handles full buffer queue and retryable errors gracefully
 
 ### 🎯 ConsumerService
+
 - Uses `confluent_kafka.Consumer`
 - Supports scalable consumption via **consumer groups**
 - Handles auto-rebalancing and partitions assignments
@@ -206,3 +208,5 @@ A whole bunch of credit to:
 | security.protocol | PLAINTEXT, SASL_PLAINTEXT, SSL, etc. |
 | ssl.ca.location | Path to CA file for verifying broker |
 | sasl.username / sasl.password | For SASL auth |
+
+- [security config](https://docs.confluent.io/platform/current/security/overview.html)

@@ -26,6 +26,7 @@ bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVER")
 acks_all=os.getenv("TOPICS_STUDENT_ADV_ACK")
 retries=int(os.getenv("TOPICS_STUDENT_ADV_RETRIES"))
 linger_ms=int(os.getenv("TOPICS_STUDENT_ADV_LINGER_MS"))
+num_of_partitions=int(os.getenv("NUM_OF_PARTITION"))
 
 producer_config = {
   'bootstrap.servers': bootstrap_servers,
