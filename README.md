@@ -13,11 +13,11 @@
   - [🧠 Key Concepts](#-key-concepts)
   - [📌 Tips](#-tips)
   - [👷‍♂️ Future Enhancements](#️-future-enhancements)
-  - [🧡 Credits](#-credits)
-  - [Gotchas](#gotchas)
-    - [acks](#acks)
-    - [enable.idempotence](#enableidempotence)
-    - [max.in.flight.request.per.connection](#maxinflightrequestperconnection)
+  - [🧡 Resources](#-resources)
+  - [Producer Configs](#producer-configs)
+    - [General](#general)
+    - [Advanced Reliability](#advanced-reliability)
+    - [Authentication \& TLS](#authentication--tls)
 
 
 This project demonstrates a Kafka-based message system using **Confluent Kafka Python Client**, featuring:
@@ -162,27 +162,47 @@ for i in range(2):
 
 ---
 
-## 🧡 Credits
+## 🧡 Resources
 
-Built with ❤️ using:
+A whole bunch of credit to:
 - [confluent-kafka-python](https://github.com/confluentinc/confluent-kafka-python)
 - [Confluent Platform Docker images](https://hub.docker.com/u/confluentinc)
 - [docker kafka](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html)
 - [confluent-kafka pypi](https://pypi.org/project/confluent-kafka/#description)
 - [confluent-kafka-docs](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html)
+- [confluent-kafka-github](https://github.com/confluentinc/confluent-kafka-python)
 
-## Gotchas
+## Producer Configs
 
-### acks
-- acks = 0 (not guaranteed)
-- acks = 1 (at least 1 data is written)
-- acks = all (all data is written)
+### General
 
-### enable.idempotence
+| key | Description |
+|-----|-------------|
+| bootstrap.servers | Comma-separated list of brokers (required) |
+| client.id | Logical identifier for the producer |
+| acks | Message durability. '0', '1', or 'all' |
+| enable.idempotence | Ensures exactly-once delivery (set to True) |
+| linger.ms | Delay to batch messages |
+| batch.num.messages | Max messages to batch before sending |
+| retries | Auto-retries on failure |
+| retry.backoff.ms | Time between retries |
+| compression.type | 'snappy', 'gzip', 'lz4', 'zstd' |
+| max.in.flight.requests.per.connection | Controls reordering risk |
 
-- tell kafka to try resend
-- if duplicate, kafka takes care of it
+### Advanced Reliability
 
-### max.in.flight.request.per.connection
+| key | Description |
+|-----|-------------|
+| queue.buffering.max.messages | Max messages in local queue |
+| queue.buffering.max.kbytes | Max memory (KB) to buffer messages |
+| delivery.timeout.ms | Timeout for message delivery (default: 30s) |
+| request.timeout.ms | Broker response wait time |
+| socket.timeout.ms | Timeout for network operations |
 
-- 1 (guarantees ordering)
+### Authentication & TLS
+
+| key | Description |
+|-----|-------------|
+| security.protocol | PLAINTEXT, SASL_PLAINTEXT, SSL, etc. |
+| ssl.ca.location | Path to CA file for verifying broker |
+| sasl.username / sasl.password | For SASL auth |
