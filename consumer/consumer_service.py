@@ -1,9 +1,8 @@
-import json
 import logging
 from confluent_kafka import Consumer, KafkaException, Message
 from sqlmodel import Session
 from utils import engine
-from models import to_student
+from models import deserialize
 
 
 class ConsumerService:
@@ -42,7 +41,7 @@ class ConsumerService:
         offset = message.offset()
         try:
             key = key.decode() if key else None
-            student = to_student(value)
+            student = deserialize(value)
             
             self.logger.info(f"📝 Received message [key:{key}], [partition:{partition}], [offset:{offset}]")
             self.persist(student)
@@ -54,5 +53,5 @@ class ConsumerService:
       with Session(engine) as session:
         session.add(student)
         session.commit()
-        self.logger.info('student saved!')
+        self.logger.info('student saved to db!')
         

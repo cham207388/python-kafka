@@ -17,7 +17,7 @@ class Student(SQLModel, table=True):
             raise ValueError("Name cannot be empty")
         return value
      
-def to_student(value) -> Student:
-    student_dict = json.loads(value.decode())
+def deserialize(value) -> Student:
+    student_dict = json.loads(value.decode('utf-8'))
     student_obj = Student.model_validate(student_dict)
     return student_obj
