@@ -1,22 +1,17 @@
 import logging
 from confluent_kafka import Consumer, KafkaException, Message
-from sqlmodel import Session
+from sqlmodel import Session, select
+
 from utils import engine
-from models import deserialize
+from models import deserialize, Student
 
 
 class ConsumerService:
-    def __init__(self, bootstrap_servers: str, topic: str, group_id: str):
+    def __init__(self, config, topic: str):
         self.topic = topic
-        self.consumer = Consumer({
-            'bootstrap.servers': bootstrap_servers,
-            'group.id': group_id,
-            'auto.offset.reset': 'earliest',  # Start from beginning if no offset
-        })
-
-        self.logger = logging.getLogger(__name__)
-
+        self.consumer = Consumer(config)
         self.consumer.subscribe([self.topic])
+        self.logger = logging.getLogger(__name__)
         self.logger.info(f"📡 Subscribed to topic: {self.topic}")
 
     def consume_forever(self):
@@ -29,6 +24,7 @@ class ConsumerService:
                     raise KafkaException(message.error())
 
                 self.handle_message(message)
+                self.consumer.store_offsets(message)
         except KeyboardInterrupt:
             self.logger.info("👋 Consumer stopped.")
         finally:
@@ -36,14 +32,14 @@ class ConsumerService:
 
     def handle_message(self, message: Message):
         key = message.key()
-        value = message.value()
         partition = message.partition()
         offset = message.offset()
+        value = message.value()
         try:
             key = key.decode() if key else None
             student = deserialize(value)
             
-            self.logger.info(f"📝 Received message [key:{key}], [partition:{partition}], [offset:{offset}]")
+            self.logger.info(f"📝 Received message with [key:{key}], from [partition:{partition}], at [offset:{offset}]")
             self.persist(student)
 
         except Exception as e:
@@ -51,7 +47,11 @@ class ConsumerService:
             
     def persist(self, student):
       with Session(engine) as session:
-        session.add(student)
-        session.commit()
-        self.logger.info('student saved to db!')
+          existing = session.exec(select(Student).where(Student.id == student.id)).first()
+          if existing:
+              self.logger.info(f"⚠️ Student {student.id} already exists. Skipping insert.")
+              return
+          session.add(student)
+          session.commit()
+          self.logger.info('student saved to db!')
         

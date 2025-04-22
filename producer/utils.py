@@ -22,7 +22,7 @@ engine = create_engine(DATABASE_URL, echo=False)
 
 # kafka
 kafka_topic=os.getenv("KAFKA_TOPIC")
-bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVER")
+bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 acks_all=os.getenv("TOPICS_STUDENT_ADV_ACK")
 retries=int(os.getenv("TOPICS_STUDENT_ADV_RETRIES"))
 linger_ms=int(os.getenv("TOPICS_STUDENT_ADV_LINGER_MS"))

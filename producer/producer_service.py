@@ -6,12 +6,9 @@ from confluent_kafka import Producer, Message
 class ProducerService:
     def __init__(self, config: str, topic: str):
         self.topic = topic
-        self.producer = self.create_producer(config)
+        self.producer = Producer(config)
         self.logger = logging.getLogger(__name__)
         
-    def create_producer(self, config):
-        producer = Producer(config)
-        return producer
     def delivery_report(self, err, message: Message):
         if err is not None:
             self.logger.error(f"❌ Delivery failed for record {message.key()}: {err}")

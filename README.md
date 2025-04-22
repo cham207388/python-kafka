@@ -9,7 +9,8 @@
   - [🧪 Running Locally](#-running-locally)
     - [Step 1: Start Kafka Cluster](#step-1-start-kafka-cluster)
     - [Step 2: Produce Messages](#step-2-produce-messages)
-    - [Step 3: Consume Messages: one consumer](#step-3-consume-messages-one-consumer)
+    - [Step 3: Consume Messages:](#step-3-consume-messages)
+    - [Processing](#processing)
   - [🧠 Key Concepts](#-key-concepts)
   - [📌 Tips](#-tips)
   - [👷‍♂️ Future Enhancements](#️-future-enhancements)
@@ -18,6 +19,11 @@
     - [General](#general)
     - [Advanced Reliability](#advanced-reliability)
     - [Authentication \& TLS](#authentication--tls)
+  - [Consumer config](#consumer-config)
+    - [Common](#common)
+    - [Offset \& Polling Behavior](#offset--polling-behavior)
+    - [Performance Tuning](#performance-tuning)
+    - [Security Settings](#security-settings)
 
 
 This project demonstrates a Kafka-based message system using **Confluent Kafka Python Client**, featuring:
@@ -109,7 +115,10 @@ student = {
 producer.send(student["id"], student)
 ```
 
-### Step 3: Consume Messages: one consumer
+### Step 3: Consume Messages: 
+
+**one consumer**
+
 ```python
 from consumer.consumer_service import ConsumerService
 
@@ -121,7 +130,7 @@ consumer = ConsumerService(
 consumer.consume_forever()
 ```
 
-🌀 To run multiple consumers in the same group:
+**multiple consumers in the same group:**
 ```python
 def run_consumer_instance(instance_id):
     consumer = ConsumerService(
@@ -137,6 +146,17 @@ for i in range(2):
     t = threading.Thread(target=run_consumer_instance, args=(i,))
     t.start()
 ```
+
+### Processing
+
+Aim to implement idempotent producer
+
+- auto offset commits and at least once processing
+- manual offset commits and at least once processing (enable.auto.commit = false)
+- manual offset commits and at most once processing (enable.auto.commit = false)
+- manual offset commits and exactly once processing (enable.auto.commit = false)
+
+offsets are committed to Kafka after processing a record (records for a batch)
 
 ---
 
@@ -210,3 +230,86 @@ A whole bunch of credit to:
 | sasl.username / sasl.password | For SASL auth |
 
 - [security config](https://docs.confluent.io/platform/current/security/overview.html)
+
+## Consumer config
+
+- The Confluent Python client (confluent-kafka) does not support custom deserializers via the config dictionary, unlike the Java Kafka client.
+
+
+```python
+import json
+
+msg = consumer.poll(1.0)
+if msg is not None and not msg.error():
+    key = msg.key().decode() if msg.key() else None
+    value = json.loads(msg.value().decode())
+```
+
+### Common
+
+```python
+from confluent_kafka import Consumer
+# minimum
+consumer = Consumer({
+    "bootstrap.servers": "localhost:9092",
+    "group.id": "my-consumer-group",
+    "auto.offset.reset": "earliest"
+})
+
+# more values
+
+config = {
+    "bootstrap.servers": "localhost:9092",
+    "group.id": "student-group",
+    "auto.offset.reset": "earliest",
+    "enable.auto.commit": False,
+    "max.poll.interval.ms": 60000,
+    "session.timeout.ms": 10000,
+    "enable.auto.offset.store": False,
+    "client.id": "student-consumer-1",
+    "on_commit": on_commit_callback
+}
+
+consumer = Consumer(config)
+consumer.subscribe(["student-topic"])
+```
+
+| key | Description |
+|-----|-------------|
+| bootstrap.servers | Comma-separated broker list |
+| group.id | Consumer group name |
+| auto.offset.reset | Where to start if no offset: *earliest*, *latest*, *none* |
+| enable.auto.commit | Whether to auto-commit offsets (*True* or *False*) |
+| client.id | Logical identifier for the client |
+| session.timeout.ms | How long to wait for a consumer heartbeat before considered dead |
+| max.poll.interval.ms | Max time between polls before considered unresponsive |
+| on_commit | call this function whenever an offset commit completes (successfully or with error) |
+
+### Offset & Polling Behavior
+
+| key | Description |
+|-----|-------------|
+| enable.auto.offset.store | Set to False if you want manual control of offset commits |
+| auto.commit.interval.ms | How often to commit offsets if enable.auto.commit is True |
+| fetch.min.bytes | Minimum bytes per fetch request |
+| fetch.max.bytes | Maximum bytes per fetch request |
+| fetch.wait.max.ms | Wait time if fetch.min.bytes isn't met |
+
+### Performance Tuning
+
+| key | Description |
+|-----|-------------|
+| queued.min.messages | Min messages in fetch queue |
+| queued.max.messages.kbytes | Max memory for queued messages |
+| max.partition.fetch.bytes | Max bytes per partition |
+| max.poll.records | Max records returned by .poll() |
+
+### Security Settings
+
+| key | Description |
+|-----|-------------|
+| security.protocol | PLAINTEXT, SSL, SASL_PLAINTEXT, etc. |
+| ssl.ca.location | CA cert location |
+| sasl.username | SASL auth username |
+| sasl.password | SASL auth password |
+| sasl.mechanism | PLAIN, SCRAM-SHA-256, etc. |
