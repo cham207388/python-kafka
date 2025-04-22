@@ -266,6 +266,7 @@ services:
       jobmanager.rpc.address: flink-jobmanager
       rest.bind-port: 9081
 
+
   flink-taskmanager:
     image: cnfldemos/flink-kafka:1.19.1-scala_2.12-java17
     hostname: flink-taskmanager
@@ -279,6 +280,7 @@ services:
       FLINK_PROPERTIES=
       jobmanager.rpc.address: flink-jobmanager
       taskmanager.numberOfTaskSlots: 10
+
 
   postgres:
     image: postgres:14-alpine
@@ -297,6 +299,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+
   topic-creator:
     image: confluentinc/cp-kafka:7.9.0
     container_name: topic-creator
@@ -305,9 +308,10 @@ services:
     - broker2
     - broker3
     entrypoint: /bin/sh
-    command: -c "echo 'Waiting for Kafka to be ready...'; cub kafka-ready -b broker1:29092 1 60; echo 'Creating topic...'; kafka-topics --bootstrap-server broker1:29092,broker2:29092,broker3:29092 --create --topic student --partitions 2 --replication-factor 3 --config min.insync.replicas=2 --config cleanup.policy=compact; echo 'Topic created successfully'; exit 0"
+    command: -c "echo 'Waiting for Kafka to be ready...'; cub kafka-ready -b broker1:29092 1 60; echo 'Creating topic...'; kafka-topics --bootstrap-server broker1:29092,broker2:29092,broker3:29092 --create --topic ${KAFKA_TOPIC} --partitions ${NUM_OF_PARTITION} --replication-factor ${REPLICA_FACTORS} --config min.insync.replicas=2 --config cleanup.policy=compact; echo 'Topic created successfully'; exit 0"
     environment:
       KAFKA_BOOTSTRAP_SERVERS: broker1:29092,broker2:29092,broker3:29092
+
   cli-tools:
     image: confluentinc/cp-server:7.9.0
     container_name: cli-tools

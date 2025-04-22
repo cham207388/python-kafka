@@ -1,8 +1,8 @@
 import os
-from sqlmodel import create_engine
-from dotenv import load_dotenv
 import logging
 import sys
+from sqlmodel import create_engine
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -31,13 +31,13 @@ auto_offset_reset=os.getenv("KAFKA_AUTO_OFFSET_RESET")
 
 consumer_config = {
     "bootstrap.servers": "localhost:9092",
-    "group.id": "student-consumer-group",
+    "group.id": consumer_group_id,
     "enable.auto.commit": False,                  # 🔒 You commit only when you're ready
     "enable.auto.offset.store": False,            # 🔧 Manual control over offset storage
-    "auto.offset.reset": "earliest",              # 📜 Start from beginning if no prior commit
-    # "max.poll.interval.ms": 300_000,              # ⏱️ Max time (5min) before Kafka revokes partition
+    "auto.offset.reset": auto_offset_reset,       # 📜 Start from beginning if no prior commit
     "session.timeout.ms": 15_000,                 # 💓 Heartbeat timeout (15s)
     "heartbeat.interval.ms": 5_000,               # 💓 Heartbeat every 5s
+    # "max.poll.interval.ms": 300_000,              # ⏱️ Max time (5min) before Kafka revokes partition
     # "fetch.min.bytes": 1_000,                     # 🧠 Wait until there's enough data
     # "fetch.max.bytes": 5_242_880,                 # 5MB max fetch
     # "queued.min.messages": 1000,                  # 🛒 Min queued messages
