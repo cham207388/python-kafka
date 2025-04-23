@@ -12,6 +12,6 @@ def run_consumer_instance(instance_id, config, topic):
     logger.info(f'🧵 Creating consumer: {instance_id} for topic: {topic}')
     consumer.consume_forever()
 
-for i in range(2):
+for i in range(NUMBER_OF_CONSUMERS):
     t = threading.Thread(target=run_consumer_instance, args=(i,consumer_config,kafka_topic,))
     t.start()
