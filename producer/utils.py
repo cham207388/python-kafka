@@ -22,11 +22,13 @@ engine = create_engine(DATABASE_URL, echo=False)
 ## kafka
 kafka_topic=os.getenv("KAFKA_TOPIC")
 bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS")
-acks_all=os.getenv("TOPICS_STUDENT_ADV_ACK")
-retries=int(os.getenv("TOPICS_STUDENT_ADV_RETRIES"))
-linger_ms=int(os.getenv("TOPICS_STUDENT_ADV_LINGER_MS"))
+acks_all=os.getenv("TOPICS_ACKS")
+retries=int(os.getenv("TOPICS_RETRIES"))
+linger_ms=int(os.getenv("TOPICS_LINGER_MS"))
 num_of_partitions=int(os.getenv("NUM_OF_PARTITION"))
 schema_registry_url=os.getenv("SCHEMA_REGISTRY_URL")
+max_inflight_req_per_conn=int(os.getenv("MAX_INFLIGHT_REQUEST_PER_CONNECTION"))
+retry_backoff_ms=int(os.getenv("RETRY_BACKOFF_MS"))
 
 student_schema = avro.loads(open("./schemas/student_schema.avsc").read())
 dlt_schema = avro.loads(open("./schemas/dead_letter_schema.avsc").read())
@@ -37,11 +39,11 @@ producer_config = {
     'acks': acks_all,  # wait for all ISR brokers
     'enable.idempotence': True,  # ensure no duplicate delivery
     'retries': retries,  # number of automatic retries
-    'retry.backoff.ms': 500,  # wait 500ms between retries
+    'retry.backoff.ms': retry_backoff_ms,  # wait 500ms between retries
     'linger.ms': linger_ms,  # allow batching for 10ms
     # 'batch.num.messages': 1000,
     # 'queue.buffering.max.messages': 10000,
-    'max.in.flight.requests.per.connection': 5,  # keep order with idempotence
+    'max.in.flight.requests.per.connection': max_inflight_req_per_conn,  # keep order with idempotence
     'schema.registry.url': schema_registry_url
 }
 
