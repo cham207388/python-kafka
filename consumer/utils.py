@@ -18,6 +18,7 @@ engine = create_engine(DATABASE_URL, echo=False)
 
 # kafka
 kafka_topic=os.getenv("KAFKA_TOPIC")
+kafka_topic_dlt=os.getenv("KAFKA_TOPIC_DLT")
 bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 consumer_group_id=os.getenv("CONSUMER_GROUP_ID")
 auto_offset_reset=os.getenv("KAFKA_AUTO_OFFSET_RESET")
