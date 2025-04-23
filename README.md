@@ -313,3 +313,7 @@ consumer.subscribe(["student-topic"])
 | sasl.username | SASL auth username |
 | sasl.password | SASL auth password |
 | sasl.mechanism | PLAIN, SCRAM-SHA-256, etc. |
+
+## Docker
+
+I extracted the commands to create topic(s) into a script to make the compose file leaner

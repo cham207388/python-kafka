@@ -266,6 +266,7 @@ services:
       jobmanager.rpc.address: flink-jobmanager
       rest.bind-port: 9081
 
+
   flink-taskmanager:
     image: cnfldemos/flink-kafka:1.19.1-scala_2.12-java17
     hostname: flink-taskmanager
@@ -279,6 +280,7 @@ services:
       FLINK_PROPERTIES=
       jobmanager.rpc.address: flink-jobmanager
       taskmanager.numberOfTaskSlots: 10
+
 
   postgres:
     image: postgres:14-alpine
@@ -305,10 +307,16 @@ services:
     - broker1
     - broker2
     - broker3
+    volumes:
+      - ./scripts/create-topics.sh:/tmp/create-topics.sh
     entrypoint: /bin/sh
-    command: -c " echo 'Waiting for Kafka to be ready...'; cub kafka-ready -b broker1:29092 1 60; echo 'Creating topics...'; kafka-topics --bootstrap-server broker1:29092,broker2:29092,broker3:29092 --create --topic ${KAFKA_TOPIC} --partitions ${NUM_OF_PARTITION} --replication-factor ${REPLICA_FACTORS} --config min.insync.replicas=2 --config cleanup.policy=compact; kafka-topics --bootstrap-server broker1:29092,broker2:29092,broker3:29092 --create --topic ${KAFKA_TOPIC_DLT} --partitions ${NUM_OF_PARTITION} --replication-factor ${REPLICA_FACTORS} --config min.insync.replicas=2 --config cleanup.policy=compact; echo 'Topics created successfully'; exit 0"
+    command: /tmp/create-topics.sh
     environment:
       KAFKA_BOOTSTRAP_SERVERS: broker1:29092,broker2:29092,broker3:29092
+      KAFKA_TOPIC: ${KAFKA_TOPIC}
+      KAFKA_TOPIC_DLT: ${KAFKA_TOPIC_DLT}
+      NUM_OF_PARTITION: ${NUM_OF_PARTITION}
+      REPLICA_FACTORS: ${REPLICA_FACTORS}
 
   cli-tools:
     image: confluentinc/cp-server:7.9.0

@@ -4,14 +4,16 @@ import mmh3
 from confluent_kafka import Producer, Message
 
 class ProducerService:
-    def __init__(self, config: str, topic: str):
+    def __init__(self, config: str, topic: str, dl_topic: str = None):
         self.topic = topic
+        self.dl_topic = dl_topic
         self.producer = Producer(config)
         self.logger = logging.getLogger(__name__)
         
     def delivery_report(self, err, message: Message):
         if err is not None:
             self.logger.error(f"❌ Delivery failed for record {message.key()}: {err}")
+            self.send_to_dead_letter(message.key(), message.value(), str(err))
         else:
             self.logger.info(f"✅ Record produced to topic: {message.topic()}, partition: [{message.partition()}] @ offset: {message.offset()}")
 
@@ -49,7 +51,17 @@ class ProducerService:
         self.logger.info("🔄 Flushing remaining messages...")
         self.producer.flush()
         
-    def get_partition(self, id: str, num_partitions: int):
-        key_bytes = id.encode("utf-8")
+    def get_partition(self, key: str, num_partitions: int):
+        key_bytes = key.encode("utf-8")
         hash_value = mmh3.hash(key_bytes, signed=False)
         return hash_value % num_partitions
+
+    def send_to_dead_letter(self, key, value, error_msg):
+        dl_value = json.dumps({
+            "key": key.decode() if key else None,
+            "original_value": value.decode() if value else None,
+            "error": error_msg
+        }).encode()
+
+        self.producer.produce(self.dl_topic, key=key, value=dl_value)
+        self.producer.flush()
