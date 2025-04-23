@@ -319,3 +319,9 @@ consumer.subscribe(["student-topic"])
 - I extracted the commands to create topic(s) into a script to make the compose file leaner
 - /scripts/create-topics.sh
 - chmod +x /scripts/create-topics.sh
+- [Kafka-ui](http://localhost:9021/)
+
+## Schema Registry
+- [sr-docs](https://docs.confluent.io/platform/current/schema-registry/index.html)
+- [sr-developer-docs](https://docs.confluent.io/platform/current/schema-registry/develop/api.html)
+- [apache avro docs](https://avro.apache.org/docs/1.12.0/)
