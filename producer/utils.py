@@ -5,8 +5,9 @@ import sys
 from dotenv import load_dotenv
 from faker import Faker
 from sqlmodel import create_engine
+from confluent_kafka import avro
 
-# database
+# Database
 load_dotenv()
 
 db_name = os.getenv("POSTGRES_DB")
@@ -27,6 +28,9 @@ linger_ms=int(os.getenv("TOPICS_STUDENT_ADV_LINGER_MS"))
 num_of_partitions=int(os.getenv("NUM_OF_PARTITION"))
 schema_registry_url=os.getenv("SCHEMA_REGISTRY_URL")
 
+student_schema = avro.loads(open("student_schema.avsc").read())
+dlt_schema = avro.loads(open("dead_letter_schema.avsc").read())
+
 producer_config = {
     'bootstrap.servers': bootstrap_servers,
     'acks': acks_all,  # wait for all ISR brokers
@@ -40,7 +44,7 @@ producer_config = {
     'schema.registry.url': schema_registry_url
 }
 
-# faker
+# Faker
 fake = Faker()
 
 def generate_fake_student():

@@ -22,13 +22,8 @@ kafka_topic_dlt=os.getenv("KAFKA_TOPIC_DLT")
 bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 consumer_group_id=os.getenv("CONSUMER_GROUP_ID")
 auto_offset_reset=os.getenv("KAFKA_AUTO_OFFSET_RESET")
+schema_registry_url=os.getenv("SCHEMA_REGISTRY_URL")
 
-
-# consumer_config = {
-#     'bootstrap.servers': bootstrap_servers,
-#     'group.id': consumer_group_id,
-#     'auto.offset.reset': auto_offset_reset,  # Start from beginning if no offset
-# }
 
 consumer_config = {
     "bootstrap.servers": "localhost:9092",
@@ -38,6 +33,7 @@ consumer_config = {
     "auto.offset.reset": auto_offset_reset,       # 📜 Start from beginning if no prior commit
     "session.timeout.ms": 15_000,                 # 💓 Heartbeat timeout (15s)
     "heartbeat.interval.ms": 5_000,               # 💓 Heartbeat every 5s
+    'schema.registry.url': schema_registry_url,
     # "max.poll.interval.ms": 300_000,              # ⏱️ Max time (5min) before Kafka revokes partition
     # "fetch.min.bytes": 1_000,                     # 🧠 Wait until there's enough data
     # "fetch.max.bytes": 5_242_880,                 # 5MB max fetch

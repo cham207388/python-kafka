@@ -1,13 +1,16 @@
 import json
 import logging
 import mmh3
-from confluent_kafka import Producer, Message
+from confluent_kafka import Message
+from confluent_kafka.avro import AvroProducer
 
 class ProducerService:
-    def __init__(self, config: str, topic: str, dl_topic: str = None):
+    def __init__(self, config: dict, value_schema, topic: str, dl_topic: str = None, dl_value_schema: str = None):
         self.topic = topic
         self.dl_topic = dl_topic
-        self.producer = Producer(config)
+        self.value_schema = value_schema
+        self.dl_value_schema = dl_value_schema
+        self.producer = AvroProducer(config, default_value_schema=self.value_schema)
         self.logger = logging.getLogger(__name__)
         
     def delivery_report(self, err, message: Message):
@@ -23,7 +26,7 @@ class ProducerService:
             self.producer.produce(
                 topic=self.topic,
                 key=key,
-                value=json.dumps(value),
+                value=value,
                 callback=self.delivery_report,
                 partition=partition
             )
@@ -36,14 +39,6 @@ class ProducerService:
     def flush(self):
         """
         Flushes any remaining messages in the producer buffer.
-
-        This method logs an informational message indicating that the flushing process
-        is starting and then calls the flush method on the producer to ensure all
-        buffered messages are sent.
-
-        The logger is used to provide a visual indication of the flushing process,
-        and the producer's flush method is responsible for the actual transmission
-        of messages.
 
         Returns:
             None
