@@ -18,6 +18,7 @@ class Student(SQLModel, table=True):
         return value
      
 def deserialize(value) -> Student:
-    student_dict = json.loads(value.decode('utf-8'))
-    student_obj = Student.model_validate(student_dict)
+    print(value)
+    print(type(value))
+    student_obj = Student.model_validate(value)
     return student_obj

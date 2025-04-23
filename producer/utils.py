@@ -28,8 +28,9 @@ linger_ms=int(os.getenv("TOPICS_STUDENT_ADV_LINGER_MS"))
 num_of_partitions=int(os.getenv("NUM_OF_PARTITION"))
 schema_registry_url=os.getenv("SCHEMA_REGISTRY_URL")
 
-student_schema = avro.loads(open("student_schema.avsc").read())
-dlt_schema = avro.loads(open("dead_letter_schema.avsc").read())
+student_schema = avro.loads(open("./schemas/student_schema.avsc").read())
+dlt_schema = avro.loads(open("./schemas/dead_letter_schema.avsc").read())
+key_schema = avro.loads(open("./schemas/key_schema.avsc").read())
 
 producer_config = {
     'bootstrap.servers': bootstrap_servers,

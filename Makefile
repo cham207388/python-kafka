@@ -31,7 +31,7 @@ produce: ## producer script
 server: ## producer fast api
 	poetry run uvicorn producer.server:app --reload
 	
-consumer: ## start consumer group
+consumer: migrate ## start consumer group
 	poetry run python consumer/main.py
 	
 migrate: ## alembic migration

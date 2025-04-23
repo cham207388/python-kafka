@@ -1,5 +1,6 @@
 import logging
-from confluent_kafka import Consumer, KafkaException, Message
+from confluent_kafka import KafkaException, Message
+from confluent_kafka.avro import AvroConsumer
 from sqlmodel import Session, select
 
 from utils import engine
@@ -9,7 +10,7 @@ from models import deserialize, Student
 class ConsumerService:
     def __init__(self, config, topic: str):
         self.topic = topic
-        self.consumer = Consumer(config)
+        self.consumer = AvroConsumer(config)
         self.consumer.subscribe([self.topic])
         self.logger = logging.getLogger(__name__)
         self.logger.info(f"📡 Subscribed to topic: {self.topic}")
@@ -36,7 +37,7 @@ class ConsumerService:
         offset = message.offset()
         value = message.value()
         try:
-            key = key.decode() if key else None
+            # key = key.decode() if key else None
             student = deserialize(value)
             
             self.logger.info(f"📝 Received message with [key:{key}], from [partition:{partition}], at [offset:{offset}]")

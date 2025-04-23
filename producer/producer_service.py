@@ -5,18 +5,21 @@ from confluent_kafka import Message
 from confluent_kafka.avro import AvroProducer
 
 class ProducerService:
-    def __init__(self, config: dict, value_schema, topic: str, dl_topic: str = None, dl_value_schema: str = None):
+    def __init__(self,
+                 config: dict,
+                 topic: str,
+                 value_schema,
+                 key_schema):
         self.topic = topic
-        self.dl_topic = dl_topic
         self.value_schema = value_schema
-        self.dl_value_schema = dl_value_schema
-        self.producer = AvroProducer(config, default_value_schema=self.value_schema)
+        self.key_schema = key_schema
+        self.producer = AvroProducer(config, default_value_schema=self.value_schema, default_key_schema=self.key_schema)
         self.logger = logging.getLogger(__name__)
         
     def delivery_report(self, err, message: Message):
         if err is not None:
             self.logger.error(f"❌ Delivery failed for record {message.key()}: {err}")
-            self.send_to_dead_letter(message.key(), message.value(), str(err))
+            # self.send_to_dead_letter(message.key(), message.value(), str(err))
         else:
             self.logger.info(f"✅ Record produced to topic: {message.topic()}, partition: [{message.partition()}] @ offset: {message.offset()}")
 
