@@ -297,12 +297,12 @@ consumer.subscribe(["student-topic"])
 
 ### Performance Tuning
 
-| key | Description |
-|-----|-------------|
-| queued.min.messages | Min messages in fetch queue |
-| queued.max.messages.kbytes | Max memory for queued messages |
-| max.partition.fetch.bytes | Max bytes per partition |
-| max.poll.records | Max records returned by .poll() |
+| key                        | Description                     |
+|----------------------------|---------------------------------|
+| queued.min.messages        | Min messages in fetch queue     |
+| queued.max.messages.kbytes | Max memory for queued messages  |
+| max.partition.fetch.bytes  | Max bytes per partition         |
+| max.poll.records           | Max records returned by .poll() |
 
 ### Security Settings
 
@@ -314,6 +314,8 @@ consumer.subscribe(["student-topic"])
 | sasl.password | SASL auth password |
 | sasl.mechanism | PLAIN, SCRAM-SHA-256, etc. |
 
-## Docker
+## Docker Compose
 
-I extracted the commands to create topic(s) into a script to make the compose file leaner
+- I extracted the commands to create topic(s) into a script to make the compose file leaner
+- /scripts/create-topics.sh
+- chmod +x /scripts/create-topics.sh
