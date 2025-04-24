@@ -22,9 +22,9 @@ db_port = os.getenv("POSTGRES_PORT")
 DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 engine = create_engine(DATABASE_URL, echo=False)
 
-# ------------------ #
+# ------------------- #
 # Kafka Configuration #
-# ------------------ #
+# ------------------- #
 kafka_topic = os.getenv("KAFKA_TOPIC")
 bootstrap_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 acks_all = os.getenv("TOPICS_ACKS")
@@ -35,9 +35,9 @@ schema_registry_url = os.getenv("SCHEMA_REGISTRY_URL")
 max_inflight_req_per_conn = int(os.getenv("MAX_INFLIGHT_REQUEST_PER_CONNECTION"))
 retry_backoff_ms = int(os.getenv("RETRY_BACKOFF_MS"))
 
-# ------------------ #
+# ---------------------- #
 # Fake Student Generator #
-# ------------------ #
+# ---------------------- #
 fake = Faker()
 
 def generate_fake_student_dict():

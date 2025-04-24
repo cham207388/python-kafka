@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def student_from_dict(obj, ctx):
+def dict_to_student(obj, ctx):
     return obj  # Or construct a Pydantic/SQLModel if needed
 
 

@@ -9,7 +9,8 @@ from models import deserialize, Student
 class ConsumerService:
     def __init__(self, config, topic: str):
         self.topic = topic
-        self.consumer = DeserializingConsumer(config)
+        self.config = config
+        self.consumer = DeserializingConsumer(self.config)
         self.consumer.subscribe([self.topic])
         self.logger = logging.getLogger(__name__)
         self.logger.info(f"📡 Subscribed to topic: {self.topic}")

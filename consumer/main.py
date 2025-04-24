@@ -3,7 +3,7 @@ import threading
 
 from consumer_service import ConsumerService
 from utils import kafka_topic
-from c_config import consumer_config
+from config import consumer_config
 
 logger = logging.getLogger(__name__)
 NUMBER_OF_CONSUMERS = 2

@@ -330,3 +330,10 @@ consumer.subscribe(["student-topic"])
 - [apache avro docs](https://avro.apache.org/docs/1.12.0/)
 - `http :8081/config` to check schema registry configuration
 - `http :8081/config/<topic-name>-value` shows FULL
+
+## Tips
+
+| Operation      | SQLModel + Pydantic v2       |
+|----------------|------------------------------|
+| Dict --> Model | Student.model_validate(data) |
+| Model --> Dict | student.model_dump()         |
