@@ -3,6 +3,8 @@ from confluent_kafka import avro
 from confluent_kafka.schema_registry.avro import AvroSerializer
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.serialization import StringSerializer
+
+from producer.models import Student
 from producer.utils import (
     schema_registry_url,
     bootstrap_servers,
@@ -20,14 +22,11 @@ key_schema = avro.loads(open("./schemas/key_schema.avsc").read())
 schema_registry_conf = {'url': schema_registry_url}
 schema_registry_client = SchemaRegistryClient(schema_registry_conf)
 
-# ✅ FIXED: Proper to_dict function
-def student_to_dict(obj, ctx):
-    return obj  # dict already
 
 avro_serializer = AvroSerializer(
     schema_registry_client=schema_registry_client,
     schema_str=student_schema_str,
-    to_dict=student_to_dict
+    to_dict=lambda student, ctx: student.model_dump()
 )
 
 producer_config = {
@@ -39,5 +38,6 @@ producer_config = {
     'linger.ms': linger_ms,
     'max.in.flight.requests.per.connection': max_inflight_req_per_conn,
     'key.serializer': StringSerializer('utf_8'),
-    'value.serializer': avro_serializer
+    'value.serializer': avro_serializer,
+    'partitioner': 'murmur2_random'
 }

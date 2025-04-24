@@ -1,5 +1,8 @@
 # 🐳 Kafka Producer & Consumer Service with Python
 
+- Producing student object
+- properly serialize and deserialize
+
 - [🐳 Kafka Producer \& Consumer Service with Python](#-kafka-producer--consumer-service-with-python)
   - [📦 Features](#-features)
     - [🚀 ProducerService](#-producerservice)
@@ -322,8 +325,8 @@ consumer.subscribe(["student-topic"])
 - [Kafka-ui](http://localhost:9021/)
 
 ## Schema Registry
-- [sr-docs](https://docs.confluent.io/platform/current/schema-registry/index.html)
-- [sr-developer-docs](https://docs.confluent.io/platform/current/schema-registry/develop/api.html)
+- [schema-reg-docs](https://docs.confluent.io/platform/current/schema-registry/index.html)
+- [schema-reg-dev-docs](https://docs.confluent.io/platform/current/schema-registry/develop/api.html)
 - [apache avro docs](https://avro.apache.org/docs/1.12.0/)
 - `http :8081/config` to check schema registry configuration
 - `http :8081/config/<topic-name>-value` shows FULL

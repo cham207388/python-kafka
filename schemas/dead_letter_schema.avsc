@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "DeadLetterRecord",
-  "namespace": "com.example",
+  "namespace": "com.abc.learning",
   "fields": [
     { "name": "key", "type": ["null", "string"], "default": null },
     { "name": "original_value", "type": ["null", "string"], "default": null },
