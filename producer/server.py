@@ -4,7 +4,8 @@ from fastapi import FastAPI
 from producer.producer_route import ProducerController
 from producer.producer_service import ProducerService
 from producer.student_service import StudentService
-from producer.utils import kafka_topic, producer_config
+from producer.utils import kafka_topic
+from producer.config import producer_config
 
 producer_service = ProducerService(
     config=producer_config,

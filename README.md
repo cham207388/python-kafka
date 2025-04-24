@@ -326,3 +326,4 @@ consumer.subscribe(["student-topic"])
 - [sr-developer-docs](https://docs.confluent.io/platform/current/schema-registry/develop/api.html)
 - [apache avro docs](https://avro.apache.org/docs/1.12.0/)
 - `http :8081/config` to check schema registry configuration
+- `http :8081/config/<topic-name>-value` shows FULL
