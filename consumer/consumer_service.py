@@ -1,6 +1,5 @@
 import logging
-from confluent_kafka import KafkaException, Message
-from confluent_kafka.avro import AvroConsumer
+from confluent_kafka import KafkaException, Message, DeserializingConsumer
 from sqlmodel import Session, select
 
 from utils import engine
@@ -10,7 +9,7 @@ from models import deserialize, Student
 class ConsumerService:
     def __init__(self, config, topic: str):
         self.topic = topic
-        self.consumer = AvroConsumer(config)
+        self.consumer = DeserializingConsumer(config)
         self.consumer.subscribe([self.topic])
         self.logger = logging.getLogger(__name__)
         self.logger.info(f"📡 Subscribed to topic: {self.topic}")
