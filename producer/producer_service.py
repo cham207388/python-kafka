@@ -1,25 +1,20 @@
 import json
 import logging
 import mmh3
-from confluent_kafka import Message
-from confluent_kafka.avro import AvroProducer
+from confluent_kafka import Message, SerializingProducer
 
 class ProducerService:
     def __init__(self,
                  config: dict,
-                 topic: str,
-                 value_schema,
-                 key_schema):
+                 topic: str):
         self.topic = topic
-        self.value_schema = value_schema
-        self.key_schema = key_schema
-        self.producer = AvroProducer(config, default_value_schema=self.value_schema, default_key_schema=self.key_schema)
+
+        self.producer = SerializingProducer(config)
         self.logger = logging.getLogger(__name__)
         
     def delivery_report(self, err, message: Message):
         if err is not None:
             self.logger.error(f"❌ Delivery failed for record {message.key()}: {err}")
-            # self.send_to_dead_letter(message.key(), message.value(), str(err))
         else:
             self.logger.info(f"✅ Record produced to topic: {message.topic()}, partition: [{message.partition()}] @ offset: {message.offset()}")
 
@@ -30,8 +25,8 @@ class ProducerService:
                 topic=self.topic,
                 key=key,
                 value=value,
-                callback=self.delivery_report,
-                partition=partition
+                partition=partition,
+                on_delivery=self.delivery_report
             )
             self.producer.poll(0)
         except BufferError as e:
@@ -53,13 +48,3 @@ class ProducerService:
         key_bytes = key.encode("utf-8")
         hash_value = mmh3.hash(key_bytes, signed=False)
         return hash_value % num_partitions
-
-    def send_to_dead_letter(self, key, value, error_msg):
-        dl_value = json.dumps({
-            "key": key.decode() if key else None,
-            "original_value": value.decode() if value else None,
-            "error": error_msg
-        }).encode()
-
-        self.producer.produce(self.dl_topic, key=key, value=dl_value)
-        self.producer.flush()
