@@ -59,7 +59,7 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 
 ## 🧱 Project Structure
 
-```bash
+```text
 .
 ├── alembic/                      # database migration
 │   └── env.py
@@ -79,11 +79,12 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 - Python 3.12+
 - Docker & Docker Compose
 - `confluent-kafka` kafka
+- `"confluent-kafka[avro]"` avro 
 - `pydantic`, `sqlmodel` (optional, for model validation)
 - `psycopg2-binary` PostgreSQL
 - `python-dotenv` environment variable
 - `alembic` db migration
-- `mmh3` hasing
+- `mmh3` hashing
 
 ---
 
@@ -337,3 +338,9 @@ consumer.subscribe(["student-topic"])
 |----------------|------------------------------|
 | Dict --> Model | Student.model_validate(data) |
 | Model --> Dict | student.model_dump()         |
+
+## Connector
+
+```bash
+http :8083/connector-plugins -b
+```
