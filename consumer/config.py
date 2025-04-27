@@ -1,4 +1,4 @@
-from utils import consumer_group_id, auto_offset_reset
+from utils import consumer_group_id, auto_offset_reset, bootstrap_servers
 
 import json
 
@@ -10,7 +10,7 @@ student_schema_str = open("./schemas/student_schema.avsc").read()
 
 
 consumer_config = {
-    "bootstrap.servers": "localhost:9092",
+    "bootstrap.servers": bootstrap_servers,
     "group.id": consumer_group_id,
     "enable.auto.commit": False,  # 🔒 You commit only when you're ready
     "enable.auto.offset.store": False,  # 🔧 Manual control over offset storage
@@ -18,3 +18,4 @@ consumer_config = {
     "session.timeout.ms": 15_000,  # 💓 Heartbeat timeout (15s)
     "heartbeat.interval.ms": 5_000  # 💓 Heartbeat every 5s
 }
+
