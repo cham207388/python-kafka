@@ -3,13 +3,15 @@ import threading
 
 from consumer_service import ConsumerService
 from utils import kafka_topic
-from config import consumer_config
+from config import consumer_config, student_schema_dict
+
+student_schema = student_schema_dict()
 
 logger = logging.getLogger(__name__)
 NUMBER_OF_CONSUMERS = 2
 
 def run_consumer_instance(instance_id, config, topic):
-    consumer = ConsumerService(config=config, topic=topic)
+    consumer = ConsumerService(config=config, topic=topic, schema=student_schema)
     logger.info(f'🧵 Creating consumer: {instance_id} for topic: {topic}')
     consumer.consume_forever()
 

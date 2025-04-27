@@ -2,8 +2,8 @@
 
 - Producing student object
 - properly serialize and deserialize
-
 - [🐳 Kafka Producer \& Consumer Service with Python](#-kafka-producer--consumer-service-with-python)
+
   - [📦 Features](#-features)
     - [🚀 ProducerService](#-producerservice)
     - [🎯 ConsumerService](#-consumerservice)
@@ -27,7 +27,6 @@
     - [Offset \& Polling Behavior](#offset--polling-behavior)
     - [Performance Tuning](#performance-tuning)
     - [Security Settings](#security-settings)
-
 
 This project demonstrates a Kafka-based message system using **Confluent Kafka Python Client**, featuring:
 
@@ -79,7 +78,7 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 - Python 3.12+
 - Docker & Docker Compose
 - `confluent-kafka` kafka
-- `"confluent-kafka[avro]"` avro 
+- `"confluent-kafka[avro]"` avro
 - `pydantic`, `sqlmodel` (optional, for model validation)
 - `psycopg2-binary` PostgreSQL
 - `python-dotenv` environment variable
@@ -91,11 +90,13 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 ## 🧪 Running Locally
 
 ### Step 1: Start Kafka Cluster
+
 ```bash
 docker compose -f docker-compose-kafka-full.yaml up -d
 ```
 
 This sets up:
+
 - 3 Kafka brokers (`broker1`, `broker2`, `broker3`)
 - Schema Registry
 - Kafka Connect
@@ -103,6 +104,7 @@ This sets up:
 - ksqlDB, REST Proxy, Flink
 
 ### Step 2: Produce Messages
+
 ```python
 from producer.producer_service import ProducerService
 import uuid
@@ -119,7 +121,7 @@ student = {
 producer.send(student["id"], student)
 ```
 
-### Step 3: Consume Messages: 
+### Step 3: Consume Messages:
 
 **one consumer**
 
@@ -135,6 +137,7 @@ consumer.consume_forever()
 ```
 
 **multiple consumers in the same group:**
+
 ```python
 def run_consumer_instance(instance_id):
     consumer = ConsumerService(
@@ -144,7 +147,7 @@ def run_consumer_instance(instance_id):
     )
     logger.info(f'🧵 Starting consumer {instance_id}')
     consumer.consume_forever()
-    
+  
 # Start multiple consumer threads (2)
 for i in range(2):
     t = threading.Thread(target=run_consumer_instance, args=(i,))
@@ -191,6 +194,7 @@ offsets are committed to Kafka after processing a record (records for a batch)
 ## 🧡 Resources
 
 A whole bunch of credit to:
+
 - [confluent-kafka-python](https://github.com/confluentinc/confluent-kafka-python)
 - [Confluent Platform Docker images](https://hub.docker.com/u/confluentinc)
 - [docker kafka](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html)
@@ -202,43 +206,45 @@ A whole bunch of credit to:
 
 ### General
 
-| key | Description |
-|-----|-------------|
-| bootstrap.servers | Comma-separated list of brokers (required) |
-| client.id | Logical identifier for the producer |
-| acks | Message durability. '0', '1', or 'all' |
-| enable.idempotence | Ensures exactly-once delivery (set to True) |
-| linger.ms | Delay to batch messages |
-| batch.num.messages | Max messages to batch before sending |
-| retries | Auto-retries on failure |
-| retry.backoff.ms | Time between retries |
-| compression.type | 'snappy', 'gzip', 'lz4', 'zstd' |
-| max.in.flight.requests.per.connection | Controls reordering risk |
+
+| key                                   | Description                                 |
+| ------------------------------------- | ------------------------------------------- |
+| bootstrap.servers                     | Comma-separated list of brokers (required)  |
+| client.id                             | Logical identifier for the producer         |
+| acks                                  | Message durability. '0', '1', or 'all'      |
+| enable.idempotence                    | Ensures exactly-once delivery (set to True) |
+| linger.ms                             | Delay to batch messages                     |
+| batch.num.messages                    | Max messages to batch before sending        |
+| retries                               | Auto-retries on failure                     |
+| retry.backoff.ms                      | Time between retries                        |
+| compression.type                      | 'snappy', 'gzip', 'lz4', 'zstd'             |
+| max.in.flight.requests.per.connection | Controls reordering risk                    |
 
 ### Advanced Reliability
 
-| key | Description |
-|-----|-------------|
-| queue.buffering.max.messages | Max messages in local queue |
-| queue.buffering.max.kbytes | Max memory (KB) to buffer messages |
-| delivery.timeout.ms | Timeout for message delivery (default: 30s) |
-| request.timeout.ms | Broker response wait time |
-| socket.timeout.ms | Timeout for network operations |
+
+| key                          | Description                                 |
+| ---------------------------- | ------------------------------------------- |
+| queue.buffering.max.messages | Max messages in local queue                 |
+| queue.buffering.max.kbytes   | Max memory (KB) to buffer messages          |
+| delivery.timeout.ms          | Timeout for message delivery (default: 30s) |
+| request.timeout.ms           | Broker response wait time                   |
+| socket.timeout.ms            | Timeout for network operations              |
 
 ### Authentication & TLS
 
-| key | Description |
-|-----|-------------|
-| security.protocol | PLAINTEXT, SASL_PLAINTEXT, SSL, etc. |
-| ssl.ca.location | Path to CA file for verifying broker |
-| sasl.username / sasl.password | For SASL auth |
+
+| key                           | Description                          |
+| ----------------------------- | ------------------------------------ |
+| security.protocol             | PLAINTEXT, SASL_PLAINTEXT, SSL, etc. |
+| ssl.ca.location               | Path to CA file for verifying broker |
+| sasl.username / sasl.password | For SASL auth                        |
 
 - [security config](https://docs.confluent.io/platform/current/security/overview.html)
 
 ## Consumer config
 
 - The Confluent Python client (confluent-kafka) does not support custom deserializers via the config dictionary, unlike the Java Kafka client.
-
 
 ```python
 import json
@@ -278,31 +284,34 @@ consumer = Consumer(config)
 consumer.subscribe(["student-topic"])
 ```
 
-| key | Description |
-|-----|-------------|
-| bootstrap.servers | Comma-separated broker list |
-| group.id | Consumer group name |
-| auto.offset.reset | Where to start if no offset: *earliest*, *latest*, *none* |
-| enable.auto.commit | Whether to auto-commit offsets (*True* or *False*) |
-| client.id | Logical identifier for the client |
-| session.timeout.ms | How long to wait for a consumer heartbeat before considered dead |
-| max.poll.interval.ms | Max time between polls before considered unresponsive |
-| on_commit | call this function whenever an offset commit completes (successfully or with error) |
+
+| key                  | Description                                                                         |
+| -------------------- | ----------------------------------------------------------------------------------- |
+| bootstrap.servers    | Comma-separated broker list                                                         |
+| group.id             | Consumer group name                                                                 |
+| auto.offset.reset    | Where to start if no offset:*earliest*, *latest*, *none*                            |
+| enable.auto.commit   | Whether to auto-commit offsets (*True* or *False*)                                  |
+| client.id            | Logical identifier for the client                                                   |
+| session.timeout.ms   | How long to wait for a consumer heartbeat before considered dead                    |
+| max.poll.interval.ms | Max time between polls before considered unresponsive                               |
+| on_commit            | call this function whenever an offset commit completes (successfully or with error) |
 
 ### Offset & Polling Behavior
 
-| key | Description |
-|-----|-------------|
+
+| key                      | Description                                               |
+| ------------------------ | --------------------------------------------------------- |
 | enable.auto.offset.store | Set to False if you want manual control of offset commits |
-| auto.commit.interval.ms | How often to commit offsets if enable.auto.commit is True |
-| fetch.min.bytes | Minimum bytes per fetch request |
-| fetch.max.bytes | Maximum bytes per fetch request |
-| fetch.wait.max.ms | Wait time if fetch.min.bytes isn't met |
+| auto.commit.interval.ms  | How often to commit offsets if enable.auto.commit is True |
+| fetch.min.bytes          | Minimum bytes per fetch request                           |
+| fetch.max.bytes          | Maximum bytes per fetch request                           |
+| fetch.wait.max.ms        | Wait time if fetch.min.bytes isn't met                    |
 
 ### Performance Tuning
 
+
 | key                        | Description                     |
-|----------------------------|---------------------------------|
+| -------------------------- | ------------------------------- |
 | queued.min.messages        | Min messages in fetch queue     |
 | queued.max.messages.kbytes | Max memory for queued messages  |
 | max.partition.fetch.bytes  | Max bytes per partition         |
@@ -310,13 +319,14 @@ consumer.subscribe(["student-topic"])
 
 ### Security Settings
 
-| key | Description |
-|-----|-------------|
+
+| key               | Description                          |
+| ----------------- | ------------------------------------ |
 | security.protocol | PLAINTEXT, SSL, SASL_PLAINTEXT, etc. |
-| ssl.ca.location | CA cert location |
-| sasl.username | SASL auth username |
-| sasl.password | SASL auth password |
-| sasl.mechanism | PLAIN, SCRAM-SHA-256, etc. |
+| ssl.ca.location   | CA cert location                     |
+| sasl.username     | SASL auth username                   |
+| sasl.password     | SASL auth password                   |
+| sasl.mechanism    | PLAIN, SCRAM-SHA-256, etc.           |
 
 ## Docker Compose
 
@@ -326,6 +336,7 @@ consumer.subscribe(["student-topic"])
 - [Kafka-ui](http://localhost:9021/)
 
 ## Schema Registry
+
 - [schema-reg-docs](https://docs.confluent.io/platform/current/schema-registry/index.html)
 - [schema-reg-dev-docs](https://docs.confluent.io/platform/current/schema-registry/develop/api.html)
 - [apache avro docs](https://avro.apache.org/docs/1.12.0/)
@@ -334,8 +345,9 @@ consumer.subscribe(["student-topic"])
 
 ## Tips
 
+
 | Operation      | SQLModel + Pydantic v2       |
-|----------------|------------------------------|
+| -------------- | ---------------------------- |
 | Dict --> Model | Student.model_validate(data) |
 | Model --> Dict | student.model_dump()         |
 
@@ -344,3 +356,8 @@ consumer.subscribe(["student-topic"])
 ```bash
 http :8083/connector-plugins -b
 ```
+
+---
+
+- use Producer and Consumer classes
+- avro schema
