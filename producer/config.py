@@ -1,4 +1,3 @@
-from confluent_kafka import avro
 import json
 
 from producer.utils import (

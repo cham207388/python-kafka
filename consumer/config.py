@@ -1,4 +1,3 @@
-from confluent_kafka.serialization import StringDeserializer
 from utils import consumer_group_id, auto_offset_reset
 
 import json
