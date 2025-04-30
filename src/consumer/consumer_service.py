@@ -64,8 +64,8 @@ class ConsumerService:
                 if not success:
                     self.logger.error(f"❌ Moving message to DLT after {self.retries} retries")
                     self.retry_service.send_to_dlt(key, message.value())
-                self.consumer.commit(asynchronous=False)
-
+                # self.consumer.commit(asynchronous=False)
+                self.consumer.store_offsets(message)
         except KeyboardInterrupt:
             self.logger.info("👋 Consumer stopped.")
         finally:
