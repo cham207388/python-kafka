@@ -19,6 +19,7 @@ dependencies = [
     "alembic (>=1.15.2,<2.0.0)",
     "psycopg2-binary (>=2.9.10,<3.0.0)",
     "mmh3 (>=5.1.0,<6.0.0)",
+    "grpcio (>=1.71.0,<2.0.0)",
 ]
 
 [tool.poetry]
@@ -27,6 +28,7 @@ package-mode = false
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
 six = "^1.17.0"
+grpcio-tools = "^1.71.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
