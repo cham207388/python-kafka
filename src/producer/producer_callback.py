@@ -1,5 +1,5 @@
 import logging
-from producer.models import Student
+from src.models import Student
 from confluent_kafka import Message
 
 

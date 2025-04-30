@@ -5,9 +5,9 @@ from confluent_kafka import KafkaException, Message, Consumer
 from fastavro import parse_schema, schemaless_reader
 from sqlmodel import Session, select
 
-from retry_service import RetryService
-from utils import engine
-from models import deserialize, Student
+from src.consumer.retry_service import RetryService
+from src.utils import engine
+from src.models import deserialize, Student
 
 
 class ConsumerService:

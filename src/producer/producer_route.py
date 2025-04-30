@@ -1,11 +1,10 @@
 import logging
-import uuid
 from fastapi import APIRouter
 
-from producer.models import Student
-from producer.producer_service import ProducerService
-from producer.student_service import StudentService
-from producer.utils import generate_fake_student_dict, num_of_partitions, generate_fake_student_obj
+from src.models import Student
+from src.producer.producer_service import ProducerService
+from src.producer.student_service import StudentService
+from src.utils import  num_of_partitions, generate_fake_student_obj
 
 
 class ProducerController:

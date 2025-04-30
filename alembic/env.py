@@ -4,10 +4,10 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from consumer.models import Student
+# from src.models import Student
 
 from sqlalchemy.orm import DeclarativeBase
-from consumer.utils import DATABASE_URL
+from src.utils import DATABASE_URL
 
 # Creating a base class
 class Base(DeclarativeBase):

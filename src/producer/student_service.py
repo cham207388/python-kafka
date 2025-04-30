@@ -1,7 +1,7 @@
 import logging
 from sqlmodel import Session, select
-from producer.utils import engine
-from producer.models import Student
+from src.utils import engine
+from src.models import Student
 
 class StudentService:
     def __init__(self) -> None:

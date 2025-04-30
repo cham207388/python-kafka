@@ -1,10 +1,10 @@
 import logging
 import threading
 from confluent_kafka import Producer
-from consumer_service import ConsumerService
-from utils import kafka_topic, kafka_topic_dlt, bootstrap_servers
-from config import consumer_config, student_schema_dict
-from retry_service import RetryService
+from src.consumer.consumer_service import ConsumerService
+from src.utils import kafka_topic, kafka_topic_dlt, bootstrap_servers, num_of_consumers
+from src.config import consumer_config, student_schema_dict
+from src.consumer.retry_service import RetryService
 
 dl_producer = Producer({"bootstrap.servers": bootstrap_servers})
 
@@ -15,7 +15,6 @@ retry_service = RetryService(
 student_schema = student_schema_dict()
 
 logger = logging.getLogger(__name__)
-NUMBER_OF_CONSUMERS = 2
 
 
 def run_consumer_instance(instance_id, config, topic):
@@ -30,6 +29,6 @@ def run_consumer_instance(instance_id, config, topic):
     consumer.consume_forever()
 
 
-for i in range(NUMBER_OF_CONSUMERS):
+for i in range(num_of_consumers):
     t = threading.Thread(target=run_consumer_instance, args=(i, consumer_config, kafka_topic,))
     t.start()

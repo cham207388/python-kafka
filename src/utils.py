@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from faker import Faker
 from sqlmodel import create_engine
 
-from producer.models import Student
+from src.models import Student
 
 # ---------------------- #
 # Database Configuration #
@@ -34,6 +34,11 @@ num_of_partitions = int(os.getenv("NUM_OF_PARTITION"))
 schema_registry_url = os.getenv("SCHEMA_REGISTRY_URL")
 max_inflight_req_per_conn = int(os.getenv("MAX_INFLIGHT_REQUEST_PER_CONNECTION"))
 retry_backoff_ms = int(os.getenv("RETRY_BACKOFF_MS"))
+num_of_consumers = int(os.getenv("NUMBER_OF_CONSUMERS"))
+
+kafka_topic_dlt = os.getenv("KAFKA_TOPIC_DLT")
+consumer_group_id = os.getenv("CONSUMER_GROUP_ID")
+auto_offset_reset = os.getenv("KAFKA_AUTO_OFFSET_RESET")
 
 # ---------------------- #
 # Fake Student Generator #
@@ -54,3 +59,4 @@ def generate_fake_student_obj() -> Student:
 # Logger setup
 FORMAT = '%(levelname)s: %(asctime)s %(name)s - line: %(lineno)d \n\t%(message)s'
 logging.basicConfig(stream=sys.stdout, format=FORMAT, level=logging.DEBUG)
+

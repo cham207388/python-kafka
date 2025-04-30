@@ -1,4 +1,4 @@
-.PHONY: help dcu dcd dcall dcdown produce server consumer migrate revision
+.PHONY: help dcu dcd dcall dcdown server consumer migrate revision
 
 message=""
 
@@ -12,15 +12,12 @@ help: ## Show this help message with aligned shortcuts, descriptions, and comman
 		if ($$0 ~ /^(\t|@)/) { cmd=$$0; sub(/^(\t|@)/, "", cmd); } \
 		printf "%-20s %-40s %s\n", target, desc, cmd; \
 	}' $(MAKEFILE_LIST)
-  
-produce: ## producer script
-	poetry run python producer/main.py
 
-server: ## producer fast api
-	poetry run uvicorn producer.server:app --reload
+app: ## start producer fast api and consumer
+	poetry run uvicorn src.server:app --reload
 	
 consumer: migrate ## start consumer group
-	poetry run python consumer/main.py
+	poetry run python src/consumer/main.py
 	
 migrate: ## alembic migration
 	poetry run alembic upgrade head
@@ -40,5 +37,8 @@ sleep:
 path:
 	poetry env info --path
 
-setup: dcu migrate
+sleep5:
+	sleep 5
+
+setup: dcu sleep5 migrate
 	echo "start docker and alembic migrate"

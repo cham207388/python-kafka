@@ -4,8 +4,8 @@ import mmh3
 from confluent_kafka import Producer
 from fastavro import schemaless_writer, parse_schema, validate
 
-from producer.models import Student
-from producer.producer_callback import ProducerCallback
+from src.models import Student
+from src.producer.producer_callback import ProducerCallback
 
 
 class ProducerService:

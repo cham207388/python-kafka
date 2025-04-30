@@ -22,3 +22,16 @@ def deserialize(value) -> Student:
     print(type(value))
     student_obj = Student.model_validate(value)
     return student_obj
+
+def to_student(request: dict) -> Student:
+    return Student(
+        email=request.get("email"),
+        first_name=request.get("first_name"),
+        last_name=request.get("last_name")
+    )
+
+def student_dict(student, ctx):
+    if student is None:
+        print("🚨 Attempted to serialize a None value")
+        return {}
+    return student.dict()
