@@ -197,42 +197,6 @@ services:
     entrypoint: /bin/sh
     tty: true
 
-#  flink-sql-client:
-#    image: cnfldemos/flink-sql-client-kafka:1.19.1-scala_2.12-java17
-#    depends_on:
-#    - flink-jobmanager
-#    hostname: flink-sql-client
-#    container_name: flink-sql-client
-#    environment:
-#      FLINK_JOBMANAGER_HOST: flink-jobmanager
-#
-#  flink-jobmanager:
-#    image: cnfldemos/flink-kafka:1.19.1-scala_2.12-java17
-#    hostname: flink-jobmanager
-#    container_name: flink-jobmanager
-#    ports:
-#    - "9081:9081"
-#    command: jobmanager
-#    environment:
-#    - |
-#      FLINK_PROPERTIES=
-#      jobmanager.rpc.address: flink-jobmanager
-#      rest.bind-port: 9081
-#
-#  flink-taskmanager:
-#    image: cnfldemos/flink-kafka:1.19.1-scala_2.12-java17
-#    hostname: flink-taskmanager
-#    container_name: flink-taskmanager
-#    depends_on:
-#    - flink-jobmanager
-#    command: taskmanager
-#    scale: 1
-#    environment:
-#    - |
-#      FLINK_PROPERTIES=
-#      jobmanager.rpc.address: flink-jobmanager
-#      taskmanager.numberOfTaskSlots: 10
-
   postgres:
     image: postgres:14-alpine
     container_name: postgres
@@ -268,6 +232,18 @@ services:
       KAFKA_TOPIC_DLT: ${KAFKA_TOPIC_DLT}
       NUM_OF_PARTITION: ${NUM_OF_PARTITION}
       REPLICA_FACTORS: ${REPLICA_FACTORS}
+    healthcheck:
+      test: >
+        bash -c '
+        kafka-topics --bootstrap-server broker1:29092,broker2:29092,broker3:29092 --list |
+        grep -q "^${KAFKA_TOPIC}$" &&
+        kafka-topics --bootstrap-server broker1:29092,broker2:29092,broker3:29092 --list |
+        grep -q "^${KAFKA_TOPIC_DLT}$"
+        '
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   cli-tools:
     image: confluentinc/cp-server:7.9.0
@@ -275,5 +251,19 @@ services:
     entrypoint: "sleep infinity"
     restart: always
 
+  fastapi-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      topic-creator:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.dc
 volumes:
   postgres-data:
