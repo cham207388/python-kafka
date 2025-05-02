@@ -1,12 +1,10 @@
-from confluent_kafka.serialization import StringDeserializer
-from confluent_kafka.schema_registry.avro import AvroDeserializer
 from confluent_kafka.schema_registry.avro import AvroSerializer
-from confluent_kafka.schema_registry import SchemaRegistryClient
+from confluent_kafka.schema_registry.avro import AvroDeserializer
+from confluent_kafka.serialization import StringDeserializer
 from confluent_kafka.serialization import StringSerializer
 
 from src.models import Student
 from src.utils import (
-    schema_registry_url,
     consumer_group_id,
     auto_offset_reset,
     bootstrap_servers,
@@ -14,11 +12,9 @@ from src.utils import (
     retry_backoff_ms,
     linger_ms,
     max_inflight_req_per_conn,
-    student_schema_str
+    student_schema_str,
+    schema_registry_client
 )
-
-schema_registry_conf = {'url': schema_registry_url}
-schema_registry_client = SchemaRegistryClient(schema_registry_conf)
 
 ## Producer
 avro_serializer = AvroSerializer(
