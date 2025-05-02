@@ -2,8 +2,8 @@ import logging
 import mmh3
 from confluent_kafka import SerializingProducer
 
-from producer.models import Student
-from producer.producer_callback import ProducerCallback
+from src.models import Student
+from src.producer.producer_callback import ProducerCallback
 
 
 class ProducerService:
