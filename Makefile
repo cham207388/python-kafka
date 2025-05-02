@@ -1,4 +1,4 @@
-.PHONY: help dcu dcd dcall dcdown server consumer migrate revision
+.PHONY: help dcu dcd app server consumer migrate revision path sleep5 setup
 
 message=""
 
@@ -30,9 +30,6 @@ dcu: ## start kafka cluster 3 brokers
 
 dcd: ## stop kafka cluster 3 brokers
 	docker compose -f compose-3b.yaml down -v
-
-sleep:
-	sleep 5
 
 path:
 	poetry env info --path
