@@ -19,12 +19,6 @@ dcu: ## Start Kafka cluster
 dcd: ## Stop Kafka cluster
 	docker compose -f ./compose.yaml down -v
 	
-dcall: ## start kafka cluster
-	docker compose -f confluent-compose.yaml up -d
-	
-dcdown: ## stop kafka cluster
-	docker compose -f confluent-compose.yaml down -v
-  
 produce: ## producer script
 	poetry run python producer/main.py
 

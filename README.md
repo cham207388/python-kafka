@@ -9,7 +9,7 @@
   - [🧪 Running Locally](#-running-locally)
     - [Step 1: Start Kafka Cluster](#step-1-start-kafka-cluster)
     - [Step 2: Produce Messages](#step-2-produce-messages)
-    - [Step 3: Consume Messages: one consumer](#step-3-consume-messages-one-consumer)
+    - [Step 3: Consume Messages:](#step-3-consume-messages)
   - [🧠 Key Concepts](#-key-concepts)
   - [📌 Tips](#-tips)
   - [👷‍♂️ Future Enhancements](#️-future-enhancements)
@@ -79,11 +79,13 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 ## 🧪 Running Locally
 
 ### Step 1: Start Kafka Cluster
+
 ```bash
-docker compose -f docker-compose-kafka-full.yaml up -d
+make dcu
 ```
 
 This sets up:
+
 - 3 Kafka brokers (`broker1`, `broker2`, `broker3`)
 - Schema Registry
 - Kafka Connect
@@ -91,32 +93,17 @@ This sets up:
 - ksqlDB, REST Proxy, Flink
 
 ### Step 2: Produce Messages
-```python
-from producer.producer_service import ProducerService
-import uuid
 
-producer = ProducerService(bootstrap_servers="localhost:9092", topic="students")
-
-student = {
-    "id": str(uuid.uuid4()),
-    "email": "alice@example.com",
-    "first_name": "Alice",
-    "last_name": "Johnson"
-}
-
-producer.send(student["id"], student)
+```bash
+make server
 ```
 
-### Step 3: Consume Messages: one consumer
-```python
-from consumer.consumer_service import ConsumerService
+### Step 3: Consume Messages:
 
-consumer = ConsumerService(
-    bootstrap_servers="localhost:9092",
-    topic="students",
-    group_id="students-group"
-)
-consumer.consume_forever()
+**one consumer**
+
+```bash
+make consumer
 ```
 
 🌀 To run multiple consumers in the same group:
