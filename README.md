@@ -92,63 +92,20 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 
 ### Step 1: Start Kafka Cluster
 ```bash
-docker compose -f docker-compose-kafka-full.yaml up -d
+make dcu
 ```
 
-This sets up:
-- 3 Kafka brokers (`broker1`, `broker2`, `broker3`)
-- Schema Registry
-- Kafka Connect
-- Control Center
-- ksqlDB, REST Proxy, Flink
-
 ### Step 2: Produce Messages
-```python
-from producer.producer_service import ProducerService
-import uuid
-
-producer = ProducerService(bootstrap_servers="localhost:9092", topic="students")
-
-student = {
-    "id": str(uuid.uuid4()),
-    "email": "alice@example.com",
-    "first_name": "Alice",
-    "last_name": "Johnson"
-}
-
-producer.send(student["id"], student)
+```bash
+make server
 ```
 
 ### Step 3: Consume Messages: 
 
 **one consumer**
 
-```python
-from consumer.consumer_service import ConsumerService
-
-consumer = ConsumerService(
-    bootstrap_servers="localhost:9092",
-    topic="students",
-    group_id="students-group"
-)
-consumer.consume_forever()
-```
-
-**multiple consumers in the same group:**
-```python
-def run_consumer_instance(instance_id):
-    consumer = ConsumerService(
-      bootstrap_servers=bootstrap_server,
-      topic=kafka_topic,
-      group_id=consumer_group
-    )
-    logger.info(f'🧵 Starting consumer {instance_id}')
-    consumer.consume_forever()
-    
-# Start multiple consumer threads (2)
-for i in range(2):
-    t = threading.Thread(target=run_consumer_instance, args=(i,))
-    t.start()
+```bash
+make consumer
 ```
 
 ### Processing
