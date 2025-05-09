@@ -92,7 +92,7 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 ### Step 1: Start Kafka Cluster
 
 ```bash
-docker compose -f docker-compose-kafka-full.yaml up -d
+make dcu
 ```
 
 This sets up:
@@ -105,35 +105,16 @@ This sets up:
 
 ### Step 2: Produce Messages
 
-```python
-from producer.producer_service import ProducerService
-import uuid
-
-producer = ProducerService(bootstrap_servers="localhost:9092", topic="students")
-
-student = {
-    "id": str(uuid.uuid4()),
-    "email": "alice@example.com",
-    "first_name": "Alice",
-    "last_name": "Johnson"
-}
-
-producer.send(student["id"], student)
+```bash
+make server
 ```
 
 ### Step 3: Consume Messages:
 
 **one consumer**
 
-```python
-from consumer.consumer_service import ConsumerService
-
-consumer = ConsumerService(
-    bootstrap_servers="localhost:9092",
-    topic="students",
-    group_id="students-group"
-)
-consumer.consume_forever()
+```bash
+make consumer
 ```
 
 **multiple consumers in the same group:**
