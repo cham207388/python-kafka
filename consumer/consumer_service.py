@@ -1,19 +1,15 @@
-import json
 import logging
 from confluent_kafka import Consumer, KafkaException, Message
 from sqlmodel import Session
-from utils import engine
-from models import to_student
+from consumer.utils import engine
+from consumer.models import to_student
 
 
 class ConsumerService:
-    def __init__(self, bootstrap_servers: str, topic: str, group_id: str):
+    def __init__(self, topic, config):
         self.topic = topic
-        self.consumer = Consumer({
-            'bootstrap.servers': bootstrap_servers,
-            'group.id': group_id,
-            'auto.offset.reset': 'earliest',  # Start from beginning if no offset
-        })
+        self.config = config
+        self.consumer = Consumer(self.config)
 
         self.logger = logging.getLogger(__name__)
 
