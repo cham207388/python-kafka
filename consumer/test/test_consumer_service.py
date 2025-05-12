@@ -70,24 +70,24 @@ class TestConsumerService:
             "📝 Received message [key:test-key], [partition:0], [offset:123]"
         )
 
-    # def test_handle_message_failure(self, consumer_service, mock_to_student, mock_logger):
-    #     # Setup mock message
-    #     mock_message = MagicMock(spec=Message)
-    #     mock_message.key.return_value = b'test-key'
-    #     mock_message.value.return_value = b'test-value'
-    #     mock_message.error.return_value = None
-    #
-    #     # Simulate conversion failure
-    #     mock_to_student.side_effect = ValueError("Invalid data")
-    #
-    #     # Call method
-    #     consumer_service.handle_message(mock_message)
-    #
-    #     # Verify error was logged
-    #     mock_logger().error.assert_called_with(
-    #         "❌ Failed to process message: Invalid data"
-    #     )
-    #
+    def test_handle_message_failure(self, consumer_service, mock_to_student, mock_logger):
+        # Setup mock message
+        mock_message = MagicMock(spec=Message)
+        mock_message.key.return_value = b'test-key'
+        mock_message.value.return_value = b'test-value'
+        mock_message.error.return_value = None
+
+        # Simulate conversion failure
+        mock_to_student.side_effect = ValueError("Invalid data")
+
+        # Call method
+        consumer_service.handle_message(mock_message)
+
+        # Verify error was logged
+        mock_logger().error.assert_called_with(
+            "❌ Failed to process message: Invalid data"
+        )
+
     # def test_persist(self, consumer_service, mock_session, mock_engine, mock_logger):
     #     # Setup mock student
     #     mock_student = MagicMock(spec=Student)
