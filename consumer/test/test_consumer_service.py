@@ -109,26 +109,26 @@ class TestConsumerService:
         # Verify logger call
         mock_logger().info.assert_called_with('student saved!')
 
-    # def test_consume_forever_normal_operation(self, consumer_service, mock_consumer):
-    #     # Setup mock consumer to return:
-    #     # 1. None (timeout)
-    #     # 2. Valid message
-    #     # 3. None (timeout)
-    #     # Then raise KeyboardInterrupt to break the loop
-    #     mock_consumer_instance = mock_consumer.return_value
-    #     mock_consumer_instance.poll.side_effect = [
-    #         None,
-    #         MagicMock(error=Mock(return_value=None)),
-    #         None,
-    #         KeyboardInterrupt()
-    #     ]
-    #
-    #     # Patch handle_message to avoid testing it here
-    #     with patch.object(consumer_service, 'handle_message') as mock_handle:
-    #         consumer_service.consume_forever()
-    #
-    #     # Verify consumer was closed
-    #     mock_consumer_instance.close.assert_called_once()
+    def test_consume_forever_normal_operation(self, consumer_service, mock_consumer):
+        # Setup mock consumer to return:
+        # 1. None (timeout)
+        # 2. Valid message
+        # 3. None (timeout)
+        # Then raise KeyboardInterrupt to break the loop
+        mock_consumer_instance = mock_consumer.return_value
+        mock_consumer_instance.poll.side_effect = [
+            None,
+            MagicMock(error=Mock(return_value=None)),
+            None,
+            KeyboardInterrupt()
+        ]
+
+        # Patch handle_message to avoid testing it here
+        with patch.object(consumer_service, 'handle_message') as mock_handle:
+            consumer_service.consume_forever()
+
+        # Verify consumer was closed
+        mock_consumer_instance.close.assert_called_once()
     #
     # def test_consume_forever_with_kafka_error(self, consumer_service, mock_consumer):
     #     # Setup mock consumer to return a message with error
