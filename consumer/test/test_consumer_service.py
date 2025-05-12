@@ -1,7 +1,7 @@
 import pytest
-from unittest.mock import Mock, patch, call, MagicMock
+from unittest.mock import Mock, patch, MagicMock
 from confluent_kafka import KafkaException, Message
-from consumer.models import Student  # assuming this exists based on to_student
+from consumer.models import Student
 from consumer.consumer_service import ConsumerService
 
 
