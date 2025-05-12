@@ -130,19 +130,19 @@ class TestConsumerService:
         # Verify consumer was closed
         mock_consumer_instance.close.assert_called_once()
     #
-    # def test_consume_forever_with_kafka_error(self, consumer_service, mock_consumer):
-    #     # Setup mock consumer to return a message with error
-    #     mock_consumer_instance = mock_consumer.return_value
-    #     mock_error = MagicMock()
-    #     mock_message_with_error = MagicMock(error=Mock(return_value=mock_error))
-    #     mock_consumer_instance.poll.side_effect = [
-    #         None,
-    #         mock_message_with_error
-    #     ]
-    #
-    #     # Test that KafkaException is raised
-    #     with pytest.raises(KafkaException):
-    #         consumer_service.consume_forever()
-    #
-    #     # Verify consumer was closed
-    #     mock_consumer_instance.close.assert_called_once()
+    def test_consume_forever_with_kafka_error(self, consumer_service, mock_consumer):
+        # Setup mock consumer to return a message with error
+        mock_consumer_instance = mock_consumer.return_value
+        mock_error = MagicMock()
+        mock_message_with_error = MagicMock(error=Mock(return_value=mock_error))
+        mock_consumer_instance.poll.side_effect = [
+            None,
+            mock_message_with_error
+        ]
+
+        # Test that KafkaException is raised
+        with pytest.raises(KafkaException):
+            consumer_service.consume_forever()
+
+        # Verify consumer was closed
+        mock_consumer_instance.close.assert_called_once()
