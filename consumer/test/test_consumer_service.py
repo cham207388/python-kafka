@@ -67,7 +67,7 @@ class TestConsumerService:
         mock_message.offset.assert_called_once()
         mock_to_student.assert_called_once_with(b'test-value')
         mock_logger().info.assert_called_with(
-            "📝 Received message [key:test-key], [partition:0], [offset:123]"
+            "Received message [key:test-key], [partition:0], [offset:123]"
         )
 
     def test_handle_message_failure(self, consumer_service, mock_to_student, mock_logger):
@@ -85,22 +85,30 @@ class TestConsumerService:
 
         # Verify error was logged
         mock_logger().error.assert_called_with(
-            "❌ Failed to process message: Invalid data"
+            "Failed to process message: Invalid data"
         )
 
-    # def test_persist(self, consumer_service, mock_session, mock_engine, mock_logger):
-    #     # Setup mock student
-    #     mock_student = MagicMock(spec=Student)
-    #
-    #     # Call method
-    #     consumer_service.persist(mock_student)
-    #
-    #     # Verify session was used correctly
-    #     mock_session.assert_called_once_with(mock_engine)
-    #     mock_session().add.assert_called_once_with(mock_student)
-    #     mock_session().commit.assert_called_once()
-    #     mock_logger().info.assert_called_with('student saved!')
-    #
+    def test_persist(self, consumer_service, mock_session, mock_engine, mock_logger):
+        # Setup mock student
+        mock_student = MagicMock(spec=Student)
+
+        # Create a mock session instance that will be returned by __enter__
+        mock_session_instance = MagicMock()
+        mock_session.return_value.__enter__.return_value = mock_session_instance
+
+        # Call method
+        consumer_service.persist(mock_student)
+
+        # Verify session was created correctly
+        mock_session.assert_called_once_with(mock_engine)
+
+        # Verify calls on the session instance (not the class)
+        mock_session_instance.add.assert_called_once_with(mock_student)
+        mock_session_instance.commit.assert_called_once()
+
+        # Verify logger call
+        mock_logger().info.assert_called_with('student saved!')
+
     # def test_consume_forever_normal_operation(self, consumer_service, mock_consumer):
     #     # Setup mock consumer to return:
     #     # 1. None (timeout)

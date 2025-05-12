@@ -40,11 +40,11 @@ class ConsumerService:
             key = key.decode() if key else None
             student = to_student(value)
             
-            self.logger.info(f"📝 Received message [key:{key}], [partition:{partition}], [offset:{offset}]")
+            self.logger.info(f"Received message [key:{key}], [partition:{partition}], [offset:{offset}]")
             self.persist(student)
 
         except Exception as e:
-            self.logger.error(f"❌ Failed to process message: {e}")
+            self.logger.error(f"Failed to process message: {e}")
             
     def persist(self, student):
       with Session(engine) as session:
