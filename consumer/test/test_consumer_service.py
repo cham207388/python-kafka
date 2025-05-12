@@ -1,8 +1,6 @@
 import pytest
 from unittest.mock import Mock, patch, call, MagicMock
 from confluent_kafka import KafkaException, Message
-from sqlmodel import Session
-import logging
 from consumer.models import Student  # assuming this exists based on to_student
 from consumer.consumer_service import ConsumerService
 
@@ -42,7 +40,7 @@ class TestConsumerService:
 
     def test_initialization(self, consumer_service, mock_consumer, mock_logger):
         mock_consumer.assert_called_once()
-        mock_logger().info.assert_called_once_with(f"📡 Subscribed to topic: test-topic")
+        mock_logger().info.assert_called_once_with(f"Subscribed to topic: test-topic")
 
     def test_handle_message_success(self, consumer_service, mock_to_student, mock_logger):
         # Setup mock message

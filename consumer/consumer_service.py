@@ -14,7 +14,7 @@ class ConsumerService:
         self.logger = logging.getLogger(__name__)
 
         self.consumer.subscribe([self.topic])
-        self.logger.info(f"📡 Subscribed to topic: {self.topic}")
+        self.logger.info(f"Subscribed to topic: {self.topic}")
 
     def consume_forever(self):
         try:
