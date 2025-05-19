@@ -14,13 +14,13 @@ producer_service = ProducerService(topic=kafka_topic,
                                    bootstrap_servers=bootstrap_servers)
 student_service = StudentService()
 producer_controller = ProducerController(producer_service, student_service)
-
+logging.getLogger("aiokafka").setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Application started...")
+    logger.info("init before app starts...")
     await producer_service.start()
     yield  # The application is now running
     logger.info("Application shutdown complete!")

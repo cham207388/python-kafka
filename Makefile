@@ -16,8 +16,11 @@ help: ## Show this help message with aligned shortcuts, descriptions, and comman
 app: migrate
 	poetry run uvicorn src.server:app --reload
 
-consumer: migrate ## start consumer group
-	poetry run python src/consumer/main.py
+server: migrate
+	poetry run uvicorn src.server:app --reload
+
+consumer: #migrate ## start consumer group
+	poetry run python src/main.py
 
 migrate: ## alembic migration
 	poetry run alembic upgrade head

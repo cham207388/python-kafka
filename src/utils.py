@@ -41,11 +41,8 @@ num_of_consumers=int(os.getenv("NUMBER_OF_CONSUMERS"))
 auto_offset_reset = os.getenv("KAFKA_AUTO_OFFSET_RESET")
 
 schema_registry_conf = {'url': schema_registry_url}
-schema_registry_client = SchemaRegistryClient(schema_registry_conf)
 
 student_schema_str = open("./schemas/student_schema.avsc").read()
-dlt_schema = avro.loads(open("./schemas/dead_letter_schema.avsc").read())
-key_schema = avro.loads(open("./schemas/key_schema.avsc").read())
 
 # ---------------------- #
 # Fake Student Generator #
