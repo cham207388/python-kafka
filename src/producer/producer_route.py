@@ -1,11 +1,10 @@
 import logging
-import uuid
 from fastapi import APIRouter
 
 from src.models import Student
 from src.producer.producer_service import ProducerService
 from src.producer.student_service import StudentService
-from src.utils import generate_fake_student_dict, num_of_partitions, generate_fake_student_obj
+from src.utils import generate_fake_student_dict
 
 
 class ProducerController:
@@ -20,10 +19,9 @@ class ProducerController:
         self.logger = logging.getLogger(__name__)
 
     def produce_student(self):
-        student = generate_fake_student_obj()
-        key = student.id
-        partition = self.producer_service.get_partition(key, num_partitions=num_of_partitions)
-        self.producer_service.send(key=key, value=student, partition=partition)
+        self.logger.info('Producing student')
+        student = generate_fake_student_dict()
+        self.producer_service.produce(student)
         return student
 
     def get_all_students(self):

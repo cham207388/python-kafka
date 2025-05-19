@@ -1,58 +1,52 @@
-import logging
-from confluent_kafka import KafkaException, Message, DeserializingConsumer
-from sqlmodel import Session, select
-
-from src.utils import engine
-from src.models import deserialize, Student
+import asyncio
+import json
+from sqlmodel import Session
+from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
+from src.utils import bootstrap_servers, kafka_topic, kafka_topic_dlt, consumer_group_id
+from src.schema_validator import StudentSchemaValidator
+from src.models import Student
 
 
 class ConsumerService:
-    def __init__(self, config, topic: str):
-        self.topic = topic
-        self.config = config
-        self.consumer = DeserializingConsumer(self.config)
-        self.consumer.subscribe([self.topic])
-        self.logger = logging.getLogger(__name__)
-        self.logger.info(f"📡 Subscribed to topic: {self.topic}")
+    def __init__(self, db_engine):
+        self.consumer = AIOKafkaConsumer(
+            kafka_topic,
+            bootstrap_servers=bootstrap_servers,
+            group_id=consumer_group_id,
+            enable_auto_commit=False
+        )
+        self.dlt_producer = AIOKafkaProducer(bootstrap_servers=bootstrap_servers)
+        self.validator = StudentSchemaValidator()
+        self.engine = db_engine
 
-    def consume_forever(self):
+    async def start(self):
+        await self.dlt_producer.start() # for dlt
+        await self.consumer.start()
         try:
-            while True:
-                message: Message = self.consumer.poll(1.0)  # timeout in seconds
-                if message is None:
-                    continue
-                if message.error():
-                    raise KafkaException(message.error())
-
-                self.handle_message(message)
-                self.consumer.store_offsets(message)
-        except KeyboardInterrupt:
-            self.logger.info("👋 Consumer stopped.")
+            async for msg in self.consumer:
+                await self.process_message(msg)
         finally:
-            self.consumer.close()
+            await self.consumer.stop()
+            await self.dlt_producer.stop()
 
-    def handle_message(self, message: Message):
-        key = message.key()
-        partition = message.partition()
-        offset = message.offset()
-        value = message.value()
+    async def process_message(self, msg, attempt: int = 1):
         try:
-            # key = key.decode() if key else None
-            student = deserialize(value)
-            
-            self.logger.info(f"📝 Received message with [key:{key}], from [partition:{partition}], at [offset:{offset}]")
-            self.persist(student)
+            data = json.loads(msg.value.decode("utf-8"))
+            self.validator.validate_or_raise(data)
 
+            student = Student(**data)
+            with Session(self.engine) as session:
+                session.add(student)
+                session.commit()
+
+            await self.consumer.commit()
+            print(f"Committed offset for message: {data}")
         except Exception as e:
-            self.logger.error(f"❌ Failed to process message: {e}")
-            
-    def persist(self, student):
-      with Session(engine) as session:
-          existing = session.exec(select(Student).where(Student.id == student.id)).first()
-          if existing:
-              self.logger.info(f"⚠️ Student {student.id} already exists. Skipping insert.")
-              return
-          session.add(student)
-          session.commit()
-          self.logger.info('student saved to db!')
-        
+            print(f"Error processing message: {e}")
+            if attempt < 3:
+                await asyncio.sleep(1)
+                await self.process_message(msg, attempt + 1)
+            else:
+                await self.dlt_producer.send_and_wait(kafka_topic_dlt, msg.value)
+                await self.consumer.commit()
+                print(f"Sent to DLT and committed offset: {msg.value}")

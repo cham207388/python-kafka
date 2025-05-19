@@ -1,9 +1,3 @@
-from confluent_kafka.schema_registry.avro import AvroSerializer
-from confluent_kafka.schema_registry.avro import AvroDeserializer
-from confluent_kafka.serialization import StringDeserializer
-from confluent_kafka.serialization import StringSerializer
-
-from src.models import Student
 from src.utils import (
     consumer_group_id,
     auto_offset_reset,
@@ -11,17 +5,33 @@ from src.utils import (
     acks_all, retries,
     retry_backoff_ms,
     linger_ms,
-    max_inflight_req_per_conn,
-    student_schema_str,
-    schema_registry_client
+    max_inflight_req_per_conn
 )
 
 ## Producer
-avro_serializer = AvroSerializer(
-    schema_registry_client=schema_registry_client,
-    schema_str=student_schema_str,
-    to_dict=lambda student, ctx: student.model_dump()
-)
+STUDENT_JSON_SCHEMA = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://com.abc.learning/student.schema.json",
+    "title": "Student",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": ["string", "null"]
+        },
+        "email": {
+            "type": "string",
+            "format": "email"
+        },
+        "first_name": {
+            "type": "string"
+        },
+        "last_name": {
+            "type": "string"
+        }
+    },
+    "required": ["email", "first_name", "last_name"],
+    "additionalProperties": False
+}
 
 producer_config = {
     'bootstrap.servers': bootstrap_servers,
@@ -31,17 +41,10 @@ producer_config = {
     'retry.backoff.ms': retry_backoff_ms,
     'linger.ms': linger_ms,
     'max.in.flight.requests.per.connection': max_inflight_req_per_conn,
-    'key.serializer': StringSerializer('utf_8'),
-    'value.serializer': avro_serializer,
     'partitioner': 'murmur2_random'
 }
 
 ## Consumer
-avro_deserializer = AvroDeserializer(
-    schema_registry_client=schema_registry_client,
-    schema_str=open("./schemas/student_schema.avsc").read(),
-    from_dict=lambda data, ctx: Student.model_validate(data)
-)
 
 consumer_config = {
     "bootstrap.servers": "localhost:9092",
@@ -51,6 +54,4 @@ consumer_config = {
     "auto.offset.reset": auto_offset_reset,  # 📜 Start from beginning if no prior commit
     "session.timeout.ms": 15_000,  # 💓 Heartbeat timeout (15s)
     "heartbeat.interval.ms": 5_000,  # 💓 Heartbeat every 5s
-    'key.deserializer': StringDeserializer('utf_8'),
-    'value.deserializer': avro_deserializer
 }

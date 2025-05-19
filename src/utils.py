@@ -2,8 +2,6 @@ import os
 import uuid
 import logging
 import sys
-from confluent_kafka.schema_registry import SchemaRegistryClient
-from confluent_kafka import avro
 from dotenv import load_dotenv
 from faker import Faker
 from sqlmodel import create_engine
@@ -38,6 +36,7 @@ max_inflight_req_per_conn = int(os.getenv("MAX_INFLIGHT_REQUEST_PER_CONNECTION")
 retry_backoff_ms = int(os.getenv("RETRY_BACKOFF_MS"))
 kafka_topic_dlt = os.getenv("KAFKA_TOPIC_DLT")
 consumer_group_id = os.getenv("CONSUMER_GROUP_ID")
+consumer_group_id_dlt = os.getenv("CONSUMER_GROUP_ID_DLT")
 num_of_consumers=int(os.getenv("NUMBER_OF_CONSUMERS"))
 auto_offset_reset = os.getenv("KAFKA_AUTO_OFFSET_RESET")
 

@@ -1,10 +1,29 @@
 import logging
+import asyncio
 
 from src.consumer.consumer_service import ConsumerService
+from src.consumer.dlt_consumer import ConsumerServiceDLT
+from src.utils import engine
 
 logger = logging.getLogger(__name__)
 
-def run_consumer_instance(instance_id, config, topic):
-    consumer = ConsumerService(config=config, topic=topic)
-    logger.info(f'🧵 Creating consumer: {instance_id} for topic: {topic}')
-    consumer.consume_forever()
+async def start_main_consumer(instance_id):
+    consumer = ConsumerService(db_engine=engine)
+    logger.info(f'🧵 Creating consumer: {instance_id}')
+    await consumer.start()
+
+async def start_dlt_consumer():
+    print("Starting DLT consumer")
+    consumer = ConsumerServiceDLT()
+    await consumer.start()
+
+async def main():
+    # Run 2 main consumers and 1 DLT consumer concurrently
+    await asyncio.gather(
+        start_main_consumer(1),
+        start_main_consumer(2),
+        start_dlt_consumer()
+    )
+
+if __name__ == "__main__":
+    asyncio.run(main())

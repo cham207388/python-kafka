@@ -1,35 +1,27 @@
 import logging
-import mmh3
-from confluent_kafka import SerializingProducer
-
-from src.models import Student
-from src.producer.producer_callback import ProducerCallback
+import json
+from aiokafka import AIOKafkaProducer
 
 
 class ProducerService:
-    def __init__(self, config: dict, topic: str):
-        self.config = config
+    def __init__(self, topic: str, validator, bootstrap_servers):
         self.topic = topic
-        self.producer = SerializingProducer(self.config)
+        self.validator = validator
+        self.bootstrap_servers = bootstrap_servers
+        self.producer = AIOKafkaProducer(bootstrap_servers=self.bootstrap_servers)
         self.logger = logging.getLogger(__name__)
 
-    def send(self, key: str, value: Student, partition: int):
+    async def start(self):
+        await self.producer.start()
+
+    async def stop(self):
+        await self.producer.stop()
+
+    async def produce(self, student_data: dict):
         try:
-            self.logger.info(f"Producing record:{value} to topic: {self.topic}")
-            self.producer.produce(
-                topic=self.topic,
-                key=key,
-                value=value,
-                partition=partition,
-                on_delivery=ProducerCallback(value)
-            )
-            self.producer.flush()
-        except BufferError as e:
-            self.logger.error(f"❗ Local producer queue is full ({len(self.producer)} messages awaiting delivery): {e}")
+            self.validator.validate_or_raise(student_data)
+            await self.producer.send_and_wait(self.topic, json.dumps(student_data).encode("utf-8"))
+            print(f"Produced message to {self.topic}: {student_data}")
         except Exception as e:
-            self.logger.exception("Unexpected error while producing message")
-        
-    def get_partition(self, key: str, num_partitions: int):
-        key_bytes = key.encode("utf-8")
-        hash_value = mmh3.hash(key_bytes, signed=False)
-        return hash_value % num_partitions
+            print(f"Failed to produce message: {e}")
+

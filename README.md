@@ -67,8 +67,8 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 │   └── utils.py
 │   └── config.py
 │   └── models.py
-│   └── producer/       
-│   └── consumer/       
+│   └── producer/     
+│   └── consumer/     
 ├── confluent-compose-3b.yaml
 ├── README.md
 ```
@@ -79,7 +79,9 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 
 - Python 3.12+
 - Docker & Docker Compose
-- `confluent-kafka` kafka
+- `aiokafka` kafka
+- `tenacity` retry logic
+- `jsonschema` schema validator
 - `"confluent-kafka[avro]"` avro
 - `pydantic`, `sqlmodel` (optional, for model validation)
 - `psycopg2-binary` PostgreSQL
@@ -214,6 +216,7 @@ if msg is not None and not msg.error():
     key = msg.key().decode() if msg.key() else None
     value = json.loads(msg.value().decode())
 ```
+
 ### Common
 
 ```python
@@ -242,6 +245,7 @@ config = {
 consumer = Consumer(config)
 consumer.subscribe(["student-topic"])
 ```
+
 
 | key                  | Description                                                                         |
 | -------------------- | ----------------------------------------------------------------------------------- |
