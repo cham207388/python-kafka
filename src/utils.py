@@ -1,14 +1,10 @@
 import os
-import uuid
 import logging
 import sys
-from confluent_kafka.schema_registry import SchemaRegistryClient
-from confluent_kafka import avro
 from dotenv import load_dotenv
 from faker import Faker
 from sqlmodel import create_engine
 
-from src.models import Student
 
 # ---------------------- #
 # Database Configuration #
@@ -33,36 +29,42 @@ acks_all = os.getenv("TOPICS_ACKS")
 retries = int(os.getenv("TOPICS_RETRIES"))
 linger_ms = int(os.getenv("TOPICS_LINGER_MS"))
 num_of_partitions = int(os.getenv("NUM_OF_PARTITION"))
-schema_registry_url = os.getenv("SCHEMA_REGISTRY_URL")
 max_inflight_req_per_conn = int(os.getenv("MAX_INFLIGHT_REQUEST_PER_CONNECTION"))
 retry_backoff_ms = int(os.getenv("RETRY_BACKOFF_MS"))
 kafka_topic_dlt = os.getenv("KAFKA_TOPIC_DLT")
 consumer_group_id = os.getenv("CONSUMER_GROUP_ID")
+consumer_group_id_dlt = os.getenv("CONSUMER_GROUP_ID_DLT")
 num_of_consumers=int(os.getenv("NUMBER_OF_CONSUMERS"))
 auto_offset_reset = os.getenv("KAFKA_AUTO_OFFSET_RESET")
-
-schema_registry_conf = {'url': schema_registry_url}
-schema_registry_client = SchemaRegistryClient(schema_registry_conf)
-
-student_schema_str = open("./schemas/student_schema.avsc").read()
-dlt_schema = avro.loads(open("./schemas/dead_letter_schema.avsc").read())
-key_schema = avro.loads(open("./schemas/key_schema.avsc").read())
 
 # ---------------------- #
 # Fake Student Generator #
 # ---------------------- #
 fake = Faker()
 
-def generate_fake_student_dict():
-    return {
-        "id": str(uuid.uuid4()),
-        "first_name": fake.first_name(),
-        "last_name": fake.last_name(),
-        "email": fake.email()
-    }
-
-def generate_fake_student_obj() -> Student:
-    return Student.model_validate(generate_fake_student_dict())
-
 FORMAT = '%(levelname)s: %(asctime)s %(name)s - line: %(lineno)d \n\t%(message)s'
 logging.basicConfig(stream=sys.stdout, format=FORMAT, level=logging.DEBUG)
+
+# STUDENT_JSON_SCHEMA = {
+#     "$schema": "https://json-schema.org/draft/2020-12/schema",
+#     "$id": "https://com.abc.learning/student.schema.json",
+#     "title": "Student",
+#     "type": "object",
+#     "properties": {
+#         "id": {
+#             "type": ["string", "null"]
+#         },
+#         "email": {
+#             "type": "string",
+#             "format": "email"
+#         },
+#         "first_name": {
+#             "type": "string"
+#         },
+#         "last_name": {
+#             "type": "string"
+#         }
+#     },
+#     "required": ["email", "first_name", "last_name"],
+#     "additionalProperties": False
+# }
