@@ -1,8 +1,9 @@
 import io
 import logging
+
 import mmh3
 from confluent_kafka import Producer
-from fastavro import schemaless_writer, parse_schema, validate
+from fastavro import parse_schema, schemaless_writer, validate
 
 from src.models import Student
 from src.producer.producer_callback import ProducerCallback
@@ -34,16 +35,18 @@ class ProducerService:
                 key=key,
                 value=serialized_value,
                 partition=partition,
-                on_delivery=ProducerCallback(value)
+                on_delivery=ProducerCallback(value),
             )
             self.producer.flush()
         except ValueError as e:
             self.logger.error(f"🛑 Schema validation error: {e}")
         except BufferError as e:
-            self.logger.error(f"❗ Local producer queue is full ({len(self.producer)} messages awaiting delivery): {e}")
-        except Exception as e:
+            self.logger.error(
+                f"❗ Local producer queue is full ({len(self.producer)} messages awaiting delivery): {e}"
+            )
+        except Exception:
             self.logger.exception("Unexpected error while producing message")
-        
+
     def get_partition(self, key: str, num_partitions: int):
         key_bytes = key.encode("utf-8")
         hash_value = mmh3.hash(key_bytes, signed=False)

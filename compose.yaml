@@ -251,19 +251,19 @@ services:
     entrypoint: "sleep infinity"
     restart: always
 
-  fastapi-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: fastapi-app
-    depends_on:
-      postgres:
-        condition: service_healthy
-      topic-creator:
-        condition: service_started
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env.dc
+#  fastapi-app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: fastapi-app
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#      topic-creator:
+#        condition: service_started
+#    ports:
+#      - "8000:8000"
+#    env_file:
+#      - .env.dc
 volumes:
   postgres-data:

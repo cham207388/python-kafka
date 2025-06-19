@@ -26,9 +26,28 @@ dependencies = [
 package-mode = false
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.5"
-six = "^1.17.0"
 grpcio-tools = "^1.71.0"
+autoflake = "^2.3.1"
+isort = "^6.0.1"
+black = "^25.1.0"
+pre-commit = "^4.2.0"
+faker = "^37.4.0"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.4.1"
+six = "^1.17.0"
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

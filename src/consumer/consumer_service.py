@@ -1,22 +1,26 @@
 import io
 import logging
 import time
-from confluent_kafka import KafkaException, Message, Consumer
+
+from confluent_kafka import Consumer, KafkaException, Message
 from fastavro import parse_schema, schemaless_reader
 from sqlmodel import Session, select
 
 from src.consumer.retry_service import RetryService
+from src.models import Student, deserialize
 from src.utils import engine
-from src.models import deserialize, Student
 
 
 class ConsumerService:
-    def __init__(self, config,
-                 topic: str,
-                 schema: dict,
-                 retries: int,
-                 retry_service: RetryService,
-                 retry_backoff: float = 1.0):
+    def __init__(
+        self,
+        config,
+        topic: str,
+        schema: dict,
+        retries: int,
+        retry_service: RetryService,
+        retry_backoff: float = 1.0,
+    ):
         self.topic = topic
         self.config = config
         self.schema = parse_schema(schema)
@@ -57,12 +61,16 @@ class ConsumerService:
                         success = True
                         break
                     except Exception as e:
-                        self.logger.warning(f"⚠️ Processing failed (attempt {attempt+1}/{self.retries}): {e}")
+                        self.logger.warning(
+                            f"⚠️ Processing failed (attempt {attempt+1}/{self.retries}): {e}"
+                        )
                         attempt += 1
                         time.sleep(self.retry_backoff * attempt)  # exponential backoff
 
                 if not success:
-                    self.logger.error(f"❌ Moving message to DLT after {self.retries} retries")
+                    self.logger.error(
+                        f"❌ Moving message to DLT after {self.retries} retries"
+                    )
                     self.retry_service.send_to_dlt(key, message.value())
                 # self.consumer.commit(asynchronous=False)
                 self.consumer.store_offsets(message)
@@ -72,24 +80,28 @@ class ConsumerService:
             self.consumer.close()
 
     def handle_message(self, key, value, partition, offset):
-
         try:
             # key = key.decode() if key else None
             student = deserialize(value)
-            
-            self.logger.info(f"📝 Received message with [key:{key}], from [partition:{partition}], at [offset:{offset}]")
+
+            self.logger.info(
+                f"📝 Received message with [key:{key}], from [partition:{partition}], at [offset:{offset}]"
+            )
             self.persist(student)
 
         except Exception as e:
             self.logger.error(f"❌ Failed to process message: {e}")
-            
+
     def persist(self, student):
-      with Session(engine) as session:
-          existing = session.exec(select(Student).where(Student.id == student.id)).first()
-          if existing:
-              self.logger.info(f"⚠️ Student {student.id} already exists. Skipping insert.")
-              return
-          session.add(student)
-          session.commit()
-          self.logger.info('student saved to db!')
-        
+        with Session(engine) as session:
+            existing = session.exec(
+                select(Student).where(Student.id == student.id)
+            ).first()
+            if existing:
+                self.logger.info(
+                    f"⚠️ Student {student.id} already exists. Skipping insert."
+                )
+                return
+            session.add(student)
+            session.commit()
+            self.logger.info("student saved to db!")

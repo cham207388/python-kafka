@@ -62,7 +62,7 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 .
 ├── alembic/                      # database migration
 │   └── env.py
-│   └── versions/  
+│   └── versions/
 ├── producer/
 │   └── producer_service.py       # Kafka producer class with topic auto-creation
 ├── consumer/
@@ -147,7 +147,7 @@ def run_consumer_instance(instance_id):
     )
     logger.info(f'🧵 Starting consumer {instance_id}')
     consumer.consume_forever()
-  
+
 # Start multiple consumer threads (2)
 for i in range(2):
     t = threading.Thread(target=run_consumer_instance, args=(i,))

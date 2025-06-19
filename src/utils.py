@@ -1,7 +1,8 @@
-import os
-import uuid
 import logging
+import os
 import sys
+import uuid
+
 from dotenv import load_dotenv
 from faker import Faker
 from sqlmodel import create_engine
@@ -19,7 +20,9 @@ db_password = os.getenv("POSTGRES_PASSWORD")
 db_host = os.getenv("POSTGRES_HOST")
 db_port = os.getenv("POSTGRES_PORT")
 
-DATABASE_URL = f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+DATABASE_URL = (
+    f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+)
 engine = create_engine(DATABASE_URL, echo=False)
 
 # ------------------- #
@@ -45,18 +48,20 @@ auto_offset_reset = os.getenv("KAFKA_AUTO_OFFSET_RESET")
 # ---------------------- #
 fake = Faker()
 
+
 def generate_fake_student_dict():
     return {
         "id": str(uuid.uuid4()),
         "first_name": fake.first_name(),
         "last_name": fake.last_name(),
-        "email": fake.email()
+        "email": fake.email(),
     }
+
 
 def generate_fake_student_obj() -> Student:
     return Student.model_validate(generate_fake_student_dict())
 
-# Logger setup
-FORMAT = '%(levelname)s: %(asctime)s %(name)s - line: %(lineno)d \n\t%(message)s'
-logging.basicConfig(stream=sys.stdout, format=FORMAT, level=logging.DEBUG)
 
+# Logger setup
+FORMAT = "%(levelname)s: %(asctime)s %(name)s - line: %(lineno)d \n\t%(message)s"
+logging.basicConfig(stream=sys.stdout, format=FORMAT, level=logging.DEBUG)

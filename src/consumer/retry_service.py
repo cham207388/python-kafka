@@ -1,9 +1,9 @@
 import logging
+
 from confluent_kafka import Producer
 
 
 class RetryService:
-
     def __init__(self, producer: Producer, dl_topic: str):
         self.dl_topic = dl_topic
         self.producer = producer
@@ -16,8 +16,6 @@ class RetryService:
             return
 
         self.producer.produce(
-            topic=self.dl_topic,
-            key=key,
-            value=value_bytes  # send raw bytes
+            topic=self.dl_topic, key=key, value=value_bytes  # send raw bytes
         )
         self.producer.flush()
