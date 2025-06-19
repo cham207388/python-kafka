@@ -26,10 +26,10 @@ revision: ## make revision message='custom message'
 	poetry run alembic revision -m $(message)
 
 dcu: ## start kafka cluster 3 brokers
-	docker compose -f compose-3b.yaml up --build -d
+	docker compose -f compose.yaml up --build -d
 
 dcd: ## stop kafka cluster 3 brokers
-	docker compose -f compose-3b.yaml down -v
+	docker compose -f compose.yaml down -v
 
 path:
 	poetry env info --path
