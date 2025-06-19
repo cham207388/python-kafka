@@ -1,4 +1,5 @@
 import logging
+
 import mmh3
 from confluent_kafka import SerializingProducer
 
@@ -21,14 +22,16 @@ class ProducerService:
                 key=key,
                 value=value,
                 partition=partition,
-                on_delivery=ProducerCallback(value)
+                on_delivery=ProducerCallback(value),
             )
             self.producer.flush()
         except BufferError as e:
-            self.logger.error(f"❗ Local producer queue is full ({len(self.producer)} messages awaiting delivery): {e}")
-        except Exception as e:
+            self.logger.error(
+                f"❗ Local producer queue is full ({len(self.producer)} messages awaiting delivery): {e}"
+            )
+        except Exception:
             self.logger.exception("Unexpected error while producing message")
-        
+
     def get_partition(self, key: str, num_partitions: int):
         key_bytes = key.encode("utf-8")
         hash_value = mmh3.hash(key_bytes, signed=False)

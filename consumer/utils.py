@@ -1,8 +1,9 @@
-import os
 import logging
+import os
 import sys
-from sqlmodel import create_engine
+
 from dotenv import load_dotenv
+from sqlmodel import create_engine
 
 load_dotenv()
 
@@ -29,5 +30,5 @@ consumer_group_id = os.getenv("CONSUMER_GROUP_ID")
 auto_offset_reset = os.getenv("KAFKA_AUTO_OFFSET_RESET")
 schema_registry_url = os.getenv("SCHEMA_REGISTRY_URL")
 
-FORMAT = '%(levelname)s: %(asctime)s %(name)s - line: %(lineno)d \n\t%(message)s'
+FORMAT = "%(levelname)s: %(asctime)s %(name)s - line: %(lineno)d \n\t%(message)s"
 logging.basicConfig(stream=sys.stdout, format=FORMAT, level=logging.DEBUG)

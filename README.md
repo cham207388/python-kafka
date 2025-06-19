@@ -63,7 +63,7 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 .
 ├── alembic/                      # database migration
 │   └── env.py
-│   └── versions/  
+│   └── versions/
 ├── producer/
 │   └── producer_service.py       # Kafka producer class with topic auto-creation
 ├── consumer/
@@ -79,7 +79,7 @@ This project demonstrates a Kafka-based message system using **Confluent Kafka P
 - Python 3.12+
 - Docker & Docker Compose
 - `confluent-kafka` kafka
-- `"confluent-kafka[avro]"` avro 
+- `"confluent-kafka[avro]"` avro
 - `pydantic`, `sqlmodel` (optional, for model validation)
 - `psycopg2-binary` PostgreSQL
 - `python-dotenv` environment variable
@@ -100,7 +100,7 @@ make dcu
 make server
 ```
 
-### Step 3: Consume Messages: 
+### Step 3: Consume Messages:
 
 **one consumer**
 

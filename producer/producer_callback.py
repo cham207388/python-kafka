@@ -1,6 +1,8 @@
 import logging
-from producer.models import Student
+
 from confluent_kafka import Message
+
+from producer.models import Student
 
 
 class ProducerCallback:
@@ -10,6 +12,10 @@ class ProducerCallback:
 
     def __call__(self, err, msg: Message):
         if err:
-            self.logger.error(f"❌ Failed to produce record: {self.student } {msg.key()}: {err}")
+            self.logger.error(
+                f"❌ Failed to produce record: {self.student } {msg.key()}: {err}"
+            )
         else:
-            self.logger.info(f"✅ Record produced to topic: {msg.topic()}, partition: [{msg.partition()}] at offset: {msg.offset()}")
+            self.logger.info(
+                f"✅ Record produced to topic: {msg.topic()}, partition: [{msg.partition()}] at offset: {msg.offset()}"
+            )

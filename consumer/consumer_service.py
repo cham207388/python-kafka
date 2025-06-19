@@ -1,9 +1,9 @@
 import logging
-from confluent_kafka import KafkaException, Message, DeserializingConsumer
-from sqlmodel import Session, select
 
+from confluent_kafka import DeserializingConsumer, KafkaException, Message
+from models import Student, deserialize
+from sqlmodel import Session, select
 from utils import engine
-from models import deserialize, Student
 
 
 class ConsumerService:
@@ -39,20 +39,25 @@ class ConsumerService:
         try:
             # key = key.decode() if key else None
             student = deserialize(value)
-            
-            self.logger.info(f"📝 Received message with [key:{key}], from [partition:{partition}], at [offset:{offset}]")
+
+            self.logger.info(
+                f"📝 Received message with [key:{key}], from [partition:{partition}], at [offset:{offset}]"
+            )
             self.persist(student)
 
         except Exception as e:
             self.logger.error(f"❌ Failed to process message: {e}")
-            
+
     def persist(self, student):
-      with Session(engine) as session:
-          existing = session.exec(select(Student).where(Student.id == student.id)).first()
-          if existing:
-              self.logger.info(f"⚠️ Student {student.id} already exists. Skipping insert.")
-              return
-          session.add(student)
-          session.commit()
-          self.logger.info('student saved to db!')
-        
+        with Session(engine) as session:
+            existing = session.exec(
+                select(Student).where(Student.id == student.id)
+            ).first()
+            if existing:
+                self.logger.info(
+                    f"⚠️ Student {student.id} already exists. Skipping insert."
+                )
+                return
+            session.add(student)
+            session.commit()
+            self.logger.info("student saved to db!")

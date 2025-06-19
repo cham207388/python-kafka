@@ -13,6 +13,9 @@ help: ## Show this help message with aligned shortcuts, descriptions, and comman
 		printf "%-20s %-40s %s\n", target, desc, cmd; \
 	}' $(MAKEFILE_LIST)
 
+install:
+	poetry install
+
 dcu: ## Start Kafka cluster
 	docker compose -f ./compose.yaml up -d
 
@@ -21,19 +24,19 @@ dcd: ## Stop Kafka cluster
 
 server: ## producer fast api
 	poetry run uvicorn producer.server:app --reload
-	
+
 consumer: migrate ## start consumer group
 	poetry run python consumer/main.py
-	
+
 migrate: ## alembic migration
 	poetry run alembic upgrade head
-	
+
 revision: ## make revision message='custom message'
 	poetry run alembic revision -m $(message)
-	
+
 dc3: ## start kafka cluster 3 brokers
 	docker compose -f confluent-compose-3b.yaml up -d
-	
+
 dcd3: ## stop kafka cluster 3 brokers
 	docker compose -f confluent-compose-3b.yaml down -v
 
@@ -42,3 +45,5 @@ sleep:
 
 path:
 	poetry env info --path
+
+setup: dcu install migrate
